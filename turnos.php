@@ -88,19 +88,6 @@
             <section class="contenido">
                         
                 <div class="contenido-izquierda">
-
-                    <!-- <header class="contenedor-logo">
-
-                        <div class="logo-empresa">
-                        
-                            <img src="<?php echo $info['logo'];?>">
-                        
-                        </div>
-                        
-                        <h1 class="nombre-empresa"> A.C.C  Bienvenido</h1>
-
-                    </header> -->
-
                     <div class="contenedor-video">
                         <div class="contenedor-reproductor">
                             <video id="video-geoportal" autoplay loop>
