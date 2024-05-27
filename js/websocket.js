@@ -136,7 +136,7 @@ function mostrarTurnos(noTurno = '', noCaja = ''){
 
 		newArray.unshift(turn);
 
-		if(newArray.length > 10){
+		if(newArray.length > 5){
 
 			newArray.pop();
 
@@ -174,17 +174,17 @@ function load_diplayed_turns(){
 //generar la tabla con los turnos
 function generate_table(table = null){
 
-	var th = "<tr><th>Turno</th><th colspan='2'>Caja</th></tr>";
+	var th = "<tr><th>Turno</th><th colspan='2'>Ventanilla</th></tr>";
 	
 	for(var i = 0; i < table.length; i++){	
 	
 		if(i == 0){
 	
-			tr = "<tr><td><span  class='primer-fila'>"+table[i]['turno']+"</span></td><td class='td-caja'><span class='caja primer-fila'>Caja</span></td><td class='no-caja'><span  class='primer-fila'>"+table[i]['caja']+"</span></td></tr>".toString();
+			tr = "<tr><td><span  class='primer-fila'>"+table[i]['turno']+"</span></td><td class='td-caja'><span class='caja primer-fila'></span></td><td class='no-caja'><span  class='primer-fila'>"+table[i]['caja']+"</span></td></tr>".toString();
 	
 		}else{
 	
-			tr = tr+"<tr><td>"+table[i]['turno']+"</td><td class='td-caja'><span class='caja'>Caja</span></td><td class='no-caja'>"+table[i]['caja']+"</td></tr>".toString();
+			tr = tr+"<tr><td>"+table[i]['turno']+"</td><td class='td-caja'><span class='caja'></span></td><td class='no-caja'>"+table[i]['caja']+"</td></tr>".toString();
 	
 		}
 	

@@ -48,7 +48,7 @@
                 }
                 
                 
-                //ultimos 7 turnos atendidos
+                //ultimos 5 turnos atendidos
                 $sqlUT = "select id, turno, idCaja from atencion order by turno desc limit 5";
                 $errorUT = "Error al cargar los ultimos 5 turnos atendidos";
                 $searchUT = consulta($con, $sqlUT, $errorUT);
@@ -61,13 +61,23 @@
         
                     <div class="contenedor-tablaTurnos">
                         <div class="columna-tablaTurnos">
-                            <div class="tabla-turnosArriba">Turno</div>
-                            <div class="tabla-turnosAbajo" id="verTurno"><?php echo $numeroTurno; ?></div>
-
+                            <div class="columna-tablaTurnos c1">
+                                <div class="cont-logo">
+                                    <img src="<?php echo $info['logo'];?>">
+                                </div>
+                            </div>
                         </div>
                         <div class="columna-tablaTurnos">
-                            <div class="tabla-turnosArriba">Ventanilla</div>  
-                            <div class="tabla-turnosAbajo" id="verCaja"><?php echo $caja; ?></div>
+                            <div class="columna-tablaTurnos c2">
+                                <div class="tabla-turnosArriba">Turno</div>
+                                <div class="tabla-turnosAbajo" id="verTurno"><?php echo $numeroTurno; ?></div>
+                            </div>
+                        </div>
+                        <div class="columna-tablaTurnos">
+                            <div class="columna-tablaTurnos c3">
+                                <div class="tabla-turnosArriba">Ventanilla</div>  
+                                <div class="tabla-turnosAbajo" id="verCaja"><?php echo $caja; ?></div>
+                            </div>
                         </div>
                     </div>
         
@@ -79,7 +89,7 @@
                         
                 <div class="contenido-izquierda">
 
-                    <header class="contenedor-logo">
+                    <!-- <header class="contenedor-logo">
 
                         <div class="logo-empresa">
                         
@@ -89,7 +99,7 @@
                         
                         <h1 class="nombre-empresa"> A.C.C  Bienvenido</h1>
 
-                    </header>
+                    </header> -->
 
                     <div class="contenedor-video">
                         <div class="contenedor-reproductor">
@@ -144,62 +154,7 @@
 
             </footer>
 			
-
-<!--			
-			<footer class="footer">
-
-<?php
-
-$RSS = new LectorRSS ("http://feeds.feedburner.com/aporrea");
-class LectorRSS {
-var $url;
-var $data;
-function LectorRSS ($url){
-$this->url;
-$this->data = implode ("", file ($url));
-}
-function obtener_items (){
-preg_match_all ("/<item .*>.*<\/item>/xsmUi", $this->data, $matches);
-$items = array ();
-foreach ($matches[0] as $match){
-$items[] = new RssItem ($match);
-}
-return $items;
-}
-}
-class RssItem {
-var $title, $url;
-function RssItem ($xml){
-$this->populate ($xml);
-}
-function populate ($xml){
-preg_match ("/<title> (.*) <\/title>/xsmUi", $xml, $matches);
-$this->title = $matches[1];
-preg_match ("/<link> (.*) <\/link>/xsmUi", $xml, $matches);
-$this->url = $matches[1];
-}
-function obtener_titulo (){
-return $this->title;
-}
-function obtener_url (){
-return $this->url;
-}
-}
-echo "<div>";
-echo "<marquee behavior='Scroll' class='noticias' behavior='alternate'>";
-foreach ($RSS->obtener_items () as $item){
-printf ('<a target="_BLANK" href="%s">%s. </a>', $item->obtener_url (), $item->obtener_titulo ());
-}
-echo "</marquee>";
-echo "</div>";
-?>
-
-</footer>
-			
--->			
-			
-			
-        
+            
         </div><!--contenedor principal-->
         
         <audio src="tonos/hangouts_message.ogg" id="tono"></audio>

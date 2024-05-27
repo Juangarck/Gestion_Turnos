@@ -2,73 +2,112 @@
 body, html {
 	margin: 0;
 	padding: 0;
+	box-sizing: border-box;
 }
-.contenedor-principal{
+.contenedor-principal {
 	padding:0px 20px; 
 }
-.marco-tablaTurnos{
+.marco-tablaTurnos {
 	background:#E19956;
 	border:solid 7px #A4A4A4;
 	margin: 0px auto;
 	margin-bottom: 30px;
 	text-align:center;
-	width: 90%;
+	width: 95%;
 	min-width: 300px;
-	height: 20%;
+	height: 20vh;
 	min-height: 50px;
 }
-.contenedor-tablaTurnos{
+.contenedor-tablaTurnos {
 	display: flex;
-	height: auto;
-	width: 90%;	
+	justify-content: space-between;
+	align-items: center;
+	height: 100%;
+	width: 100%;	
 }
 .columna-tablaTurnos{
-	flex-basis: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+	box-sizing: border-box; /* Añadir box-sizing para evitar desbordamientos */
+	height: 100%;
+	width: 100%;
+}
+.c1 {
+    width: auto;
+    order: 1; /* Ubica la columna c1 a la izquierda */
+}
+.c2 {
+    width: auto;
+    order: 2; /* Ubica la columna c2 en el centro */
+}
+.c3 {
+    width: auto;
+    order: 3; /* Ubica la columna c3 a la derecha */
+}
+.cont-logo{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.cont-logo img{
+	display: block;
+	width: 100%;
+	height: 100%;
 }
 .tabla-turnosArriba, .tabla-turnosAbajo{
 	display: flex;
 	justify-content: center;
 	align-items: center;
-
+	width: 100%;
+    overflow: hidden;
 }
 .tabla-turnosArriba{
-	font-size: 4vw;
-	flex-basis: 70%;
+	font-size: 4.5vw;
 	color:white;
 	min-height: 70px;
 }
 .tabla-turnosAbajo{
 	color: #272626;
-	font-size: 6vw;
-	flex-basis: 30%;
+	font-size: 4.5vw;
 	min-height: 150px;
 }
 
 .contenido{
 	display: flex;
 	margin: 0px auto;
-	width: 90%;
+	width: 95%;
 	min-width: 300px;
 	height: 70vh;
 }
 .contenido-izquierda,
 .contenido-derecha{
-	flex-basis: 50%;
+	flex-basis: 45%;
 	height: auto;
+	width: auto;
 	padding: 0px;
-	padding: 10px;
+	box-sizing: border-box;
+	order: 2;
+}
+.contenido-derecha{
+	flex-basis: 55%;
+	margin-left: 10px;
 }
 .contenido-izquierda{
 	border: solid 1px white;
-	flex-basis: 60%;
 	padding: 10px;
+	box-sizing: border-box;
+	order: 1;
 }
-.contenedor-logo{
+/*.contenedor-logo{
 	display: flex;
 	margin-bottom: 10px;
 	padding: 0px;
 	width: 100%;
-	height: 20%;
+	height: 13%;
 }
 .logo-empresa{
 	display: block;
@@ -89,20 +128,20 @@ body, html {
 	line-height: 2;
 	margin: 0px;
 	margin-left: 10px;
-}
+}*/
 .contenedor-video {
 	display: flex;
 	align-items: center;
 	width: 100%;
-	height: 75%;
+	height: 100%;
 	border: none;
 	float: left;
 	background: none;
 	margin: 0;
-padding: 0;
+	padding: 0;
 }
 .contenedor-reproductor {
-	/*background: rgb(188, 192, 135);*/
+	background: rgb(20, 20, 20);
 	padding: 0; /* Elimina cualquier relleno */
 	width: 100%;
 	height: 100%; /* El 70% de la altura de la ventana gráfica del navegador */
@@ -111,12 +150,11 @@ padding: 0;
 }
 #video-geoportal {
 	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
+	top: 0;
+	left: 0;
 	width: 100%; /* Ajusta al 100% del contenedor */
 	height: 100%; /* Ajusta al 100% del contenedor */
-	object-fit: contain;
+	object-fit: cover;
 }
 #imagen-geoportal {
 	position: absolute;
@@ -131,10 +169,6 @@ padding: 0;
 	width:100%;
 	height: 100%;
 }
-.contenido-derecha{
-	flex-basis: 40%;
-	margin-left: 20px;
-}
 .contenedor-turnos{
 	background:white;
 	width:100%;
@@ -146,35 +180,40 @@ padding: 0;
 	width: 100%;
 }
 .tabla-turnos th {
-	font-size: 6vw; /* Tamaño de fuente relativo al ancho de la pantalla */
+	font-size: 5.5vw; /* Tamaño de fuente relativo al ancho de la pantalla */
 	color: black;
 	padding: 2vw; /* Espacio de relleno relativo al ancho de la pantalla */
 }
 .tabla-turnos td {
 	color: black;
-	font-size: 5vw; /* Tamaño de fuente relativo al ancho de la pantalla */
-	padding-bottom: 1.5vw; /* Espacio de relleno relativo al ancho de la pantalla */
+	font-size: 4.5vw; /* Tamaño de fuente relativo al ancho de la pantalla */
+	padding-bottom: 2vw; /* Espacio de relleno relativo al ancho de la pantalla */
+	text-align: center;
 }
 
 .primer-fila{
 	color:#2776ec;
+	text-align: center;
 }
-.caja,.no-caja{
-	width:25%;
+.caja{
+	width:0%;
+}
+.no-caja{
+	width:95%;
 }
 .td-caja{
-	text-align:right;
+	text-align:center;
 }
 .caja{
 	font-size:20px;
 }
 .no-caja{
-	text-align:left;
+	text-align:center;
 	padding-left:20px;
 }
 .footer{
 	margin: 20px auto;
-	width: 90%;
+	width: 95%;
 	min-width: 300px;
 	height: 10vh;
 }

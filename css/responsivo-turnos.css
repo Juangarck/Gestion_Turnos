@@ -3,8 +3,8 @@
 /* CSS Document */
 @media (max-width:500px){
 	.tabla-turnos th, .tabla-turnos td {
-        font-size: 6vw;
-        padding: 4vw;
+        font-size: 5vw;
+        padding: 2vw;
 	}
 }	
 @media (max-width:630px){
@@ -12,8 +12,8 @@
 		flex-direction: column;
 	}
 	.tabla-turnos th, .tabla-turnos td {
-        font-size: 6vw;
-        padding: 3vw;
+        font-size: 5vw;
+        padding: 2vw;
 	}
 }	
 @media (max-width:750px){
@@ -24,13 +24,13 @@
 		margin-left: 0px;
 	}
 	.tabla-turnos th, .tabla-turnos td {
-        font-size: 6vw;
-        padding: 3vw;
+        font-size: 4.5vw;
+        padding: 2vw;
 	}
 }	
 @media (min-width:960px){
 	.tabla-turnos th, .tabla-turnos td {
-        font-size: 5vw;
-        padding: 3vw;
+        font-size: 4.5vw;
+        padding: 2vw;
 	}	
 }
