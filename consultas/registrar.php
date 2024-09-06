@@ -37,12 +37,11 @@
 
 			break;
 			case 'turno':
-				$nombre = limpiar($con, $_POST['nombre']);
 				$cedula = limpiar($con, $_POST['cedula']);
 				
-				// Validar que nombre y cédula no estén vacíos
-				if(empty($nombre) || empty($cedula)) {
-					$respuesta = array('status' => 'error', 'mensaje' => 'Nombre o cédula no pueden estar vacíos', 'turno' => '000');
+				// Validar que  cédula no esté vacia
+				if(empty($cedula)) {
+					$respuesta = array('status' => 'error', 'mensaje' => 'cédula no puede estar vacia', 'turno' => '000');
 					break;
 				}
 			
@@ -57,14 +56,14 @@
 				}
 				
 				$fecha = date("Y-m-d H:i:s");
-				$sql = "INSERT INTO turnos (turno, nombre, cedula, fechaRegistro) VALUES ('$turno', '$nombre', '$cedula', '$fecha')";
+				$sql = "INSERT INTO turnos (turno, cliente_id, fechaRegistro) VALUES ('$turno', '$cedula', '$fecha')";
 				
 				if(consulta($con, $sql, $error)) {
 					// Llamada al script Python para imprimir el ticket
 					$nombre_esc = escapeshellarg($nombre);
 					$cedula_esc = escapeshellarg($cedula);
 					$turno_esc = escapeshellarg($turno);
-					$comando = "python /imprimir.py $nombre_esc $cedula_esc $turno_esc";
+					//$comando = "python /imprimir.py $nombre_esc $cedula_esc $turno_esc";
 					shell_exec($comando);
 			
 					$respuesta = array('status' => 'correcto', 'mensaje' => 'Turno registrado', 'turno' => $turno);
