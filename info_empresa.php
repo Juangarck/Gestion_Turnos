@@ -27,6 +27,7 @@
 					
 					require_once('funciones/conexion.php');
 					require_once('funciones/funciones.php');
+					date_default_timezone_set('America/Bogota');
 					
 					$mensaje="";
 					

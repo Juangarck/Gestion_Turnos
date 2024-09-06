@@ -14,6 +14,8 @@
 	$null = NULL; //null var
 	$address = '0.0.0.0';//accept from anywhere
 
+	date_default_timezone_set('America/Bogota');
+
 	  	//Create TCP/IP sream socket
 	if (($socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP)) === false) {
 	 

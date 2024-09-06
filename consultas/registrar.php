@@ -1,5 +1,5 @@
 <?php
-
+	date_default_timezone_set('America/Bogota');
 	if(isset($_POST['registrar'])){
 
 		require_once('../funciones/conexion.php');

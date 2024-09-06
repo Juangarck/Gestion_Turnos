@@ -11,6 +11,7 @@
         <?php
             require_once('funciones/conexion.php');
             require_once('funciones/funciones.php');
+            date_default_timezone_set('America/Bogota');
             
             // Obtener el último turno
             $sql = "SELECT turno FROM turnos ORDER BY id DESC LIMIT 1";

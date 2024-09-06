@@ -1,5 +1,5 @@
 <?php
-
+	date_default_timezone_set('America/Bogota');
 	//funcion encriptar con md5
 	function encriptarMd5($contraseña){
 		

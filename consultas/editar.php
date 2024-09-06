@@ -1,4 +1,5 @@
 <?php
+	date_default_timezone_set('America/Bogota');
 	if(isset($_POST['editar'])){
 		require_once('../funciones/conexion.php');
 		require_once('../funciones/funciones.php');
