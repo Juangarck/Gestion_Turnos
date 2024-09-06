@@ -31,16 +31,20 @@ function detectarAccion(e){
     conectarViaPost(funcion,fichero,datos);
 }
 
-function procesarSolicitud(){
-
-    if(conexion.readyState === 4 && conexion.status === 200){
+function procesarSolicitud() {
+    if (conexion.readyState === 4 && conexion.status === 200) {
         try {
             var jsonData = JSON.parse(conexion.responseText);
-            var noTurno = document.getElementById('turno');
-            noTurno.innerHTML = jsonData.turno;
-        } catch(e) {
+            if (jsonData.status === 'success') {
+                // Mostrar número de turno u otro mensaje de éxito
+                var noTurno = document.getElementById('turno');
+                noTurno.innerHTML = jsonData.message;
+            } else if (jsonData.status === 'error') {
+                // Redirigir al registro si el cliente no existe
+                window.location.href = 'registro.php';
+            }
+        } catch (e) {
             console.error('Error al procesar la respuesta JSON', e);
         }
-    }    
-
+    }
 }

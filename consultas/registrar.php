@@ -37,14 +37,6 @@
 
 			break;
 			case 'turno':
-				$cedula = limpiar($con, $_POST['cedula']);
-				
-				// Validar que  cédula no esté vacia
-				if(empty($cedula)) {
-					$respuesta = array('status' => 'error', 'mensaje' => 'cédula no puede estar vacia', 'turno' => '000');
-					break;
-				}
-			
 				// Obtener el último turno
 				$sql = "SELECT turno FROM turnos ORDER BY id DESC LIMIT 1";
 				$resultado = consulta($con, $sql, $error);
@@ -56,8 +48,29 @@
 				}
 				
 				$fecha = date("Y-m-d H:i:s");
-				$sql = "INSERT INTO turnos (turno, cliente_id, fechaRegistro) VALUES ('$turno', '$cedula', '$fecha')";
-				
+				// Asegurarse de recibir la cédula
+				if (isset($_POST['cedula'])) {
+					$cedula = $_POST['cedula'];
+
+					// Buscar el cliente en la base de datos
+					$query = "SELECT id FROM clientes WHERE cedula = '$cedula'";
+					$resultado = mysqli_query($con, $query);
+
+					if (mysqli_num_rows($resultado) > 0) {
+						// Si existe el cliente, obtener su id
+						$cliente = mysqli_fetch_assoc($resultado);
+						$cliente_id = $cliente['id'];
+
+						$query_turno = "INSERT INTO turnos (turno, cliente_id, fechaRegistro) VALUES ('$turno', '$cliente_id', NOW())";
+						mysqli_query($con, $query_turno);
+
+						echo json_encode(['status' => 'success', 'message' => 'Turno registrado exitosamente']);
+					} else {
+						// Si el cliente no existe, redireccionar al registro
+						echo json_encode(['status' => 'error', 'message' => 'Cliente no encontrado, redireccionando a registro']);
+					}
+				}
+							
 				if(consulta($con, $sql, $error)) {
 					// Llamada al script Python para imprimir el ticket
 					$nombre_esc = escapeshellarg($nombre);
