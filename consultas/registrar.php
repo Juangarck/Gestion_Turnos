@@ -36,40 +36,44 @@
 				}
 
 			break;
-			case'turno':
-				$sql="select id from turnos";
-				$error="Error al registrar el turno";
-				$buscar=consulta($con,$sql,$error);
-				$noTurno=mysqli_num_rows($buscar);
-				if($noTurno>0){
-					$sql="select turno from turnos order by id desc";
-					$error="Error al seleccionar el turno";
-					$buscar=consulta($con,$sql,$error);
-					$resultado=mysqli_fetch_assoc($buscar);			
-					$turno=$resultado['turno']+1;
-					
-					if($turno >= 10 && $turno < 100){
-						$turno="0".$turno;
-					}else if($turno >= 100){
-						$turno;	
-					}else{
-						$turno="0"."0".$turno;
-					}
-				}else{
-					$turno="00"."1";
-				}
-					
-				$fecha=date("Y-m-d H:i:s");
-				$sql="insert into turnos (turno,fechaRegistro) values ('$turno','$fecha')";
-				$error="Error al registrar el turno";
-				$registrar=consulta($con,$sql,$error);
+			case 'turno':
+				$nombre = limpiar($con, $_POST['nombre']);
+				$cedula = limpiar($con, $_POST['cedula']);
 				
-				if($registrar==true){
-					$respuesta=array('status'=>'correcto','mensaje'=>'Turno registrado','turno'=>$turno);		
-				}else{
-					$respuesta=array('status'=>'error','mensaje'=>'Error al registrar el turno','turno'=>000);	
+				// Validar que nombre y cédula no estén vacíos
+				if(empty($nombre) || empty($cedula)) {
+					$respuesta = array('status' => 'error', 'mensaje' => 'Nombre o cédula no pueden estar vacíos', 'turno' => '000');
+					break;
 				}
-			break;
+			
+				// Obtener el último turno
+				$sql = "SELECT turno FROM turnos ORDER BY id DESC LIMIT 1";
+				$resultado = consulta($con, $sql, $error);
+				$turno = "001";
+			
+				if($resultado && mysqli_num_rows($resultado) > 0) {
+					$ultimoTurno = mysqli_fetch_assoc($resultado);
+					$turno = str_pad($ultimoTurno['turno'] + 1, 3, '0', STR_PAD_LEFT);
+				}
+				
+				$fecha = date("Y-m-d H:i:s");
+				$sql = "INSERT INTO turnos (turno, nombre, cedula, fechaRegistro) VALUES ('$turno', '$nombre', '$cedula', '$fecha')";
+				
+				if(consulta($con, $sql, $error)) {
+					// Llamada al script Python para imprimir el ticket
+					$nombre_esc = escapeshellarg($nombre);
+					$cedula_esc = escapeshellarg($cedula);
+					$turno_esc = escapeshellarg($turno);
+					$comando = "python /imprimir.py $nombre_esc $cedula_esc $turno_esc";
+					shell_exec($comando);
+			
+					$respuesta = array('status' => 'correcto', 'mensaje' => 'Turno registrado', 'turno' => $turno);
+				} else {
+					$respuesta = array('status' => 'error', 'mensaje' => 'Error al registrar el turno', 'turno' => '000');
+				}
+				break;
+			
+						
 			case'atencion':
 
 				$idCaja=limpiar($con,$_POST['idCaja']);
@@ -182,7 +186,7 @@
 				
 				}else if($noTurnosAtencion==1){
 					
-					//si solamente hay un turno por atender se actualiza ela t}atencion y se da uno nuevo
+					//si solamente hay un turno por atender se actualiza la atencion y se da uno nuevo
 					
 					if($_POST['turno']!='000'){
 					

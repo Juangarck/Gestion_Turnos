@@ -98,6 +98,18 @@ CREATE TABLE `noticias` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
 -- --------------------------------------------------------
+-- 
+-- Estructura de tabla para los clientes o interesados
+-- 
+CREATE TABLE `clientes` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `nombre` VARCHAR(100) NOT NULL,
+    `cedula` VARCHAR(20) UNIQUE NOT NULL,
+    `telefono` VARCHAR(20),
+    `email` VARCHAR(100),
+    `direccion` TEXT,
+    `fechaRegistro` DATETIME NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
 --
 -- Estructura de tabla para la tabla `turnos`
@@ -109,7 +121,10 @@ CREATE TABLE `turnos` (
   `atendido` int(11) NOT NULL,
   `fechaRegistro` datetime NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
-
+ALTER TABLE turnos
+ADD cliente_id INT,
+ADD CONSTRAINT fk_cliente
+FOREIGN KEY (cliente_id) REFERENCES clientes(id);
 -- --------------------------------------------------------
 
 --

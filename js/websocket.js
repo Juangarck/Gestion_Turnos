@@ -8,7 +8,7 @@ function iniciarWebsocket(){
 
 	imgStatus = document.getElementById('imgStatus');
 
-	socket = new WebSocket("ws://192.168.16.10:8888/php/proyectos/turnero/turnero/server.php");
+	socket = new WebSocket("ws://192.168.0.1:8888/php/proyectos/turnero/turnero/server.php");
 
 	socket.addEventListener('open', abierto, false);
 	socket.addEventListener('message', recibido, false);
