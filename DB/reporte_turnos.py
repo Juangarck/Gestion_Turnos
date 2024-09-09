@@ -95,15 +95,16 @@ def obtener_indicadores_por_usuario(conn):
 
     return turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo
 
-def generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo):
-    # Crear un nuevo archivo Excel
-    workbook = xlsxwriter.Workbook('reporte_turnos.xlsx')
+def generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, tipo_reporte, rango_fechas=None):
+    # Crear un nuevo archivo Excel con el tipo de reporte en el nombre
+    reporte_nombre = f'reporte_turnos_{tipo_reporte}.xlsx'
+    workbook = xlsxwriter.Workbook(reporte_nombre)
     worksheet = workbook.add_worksheet()
 
-    # Encabezados
+    # Escribir encabezados
     worksheet.write(0, 0, 'Usuario ID')
     worksheet.write(0, 1, 'Ventanilla')
-    worksheet.write(0, 2, 'Fecha')
+    worksheet.write(0, 2, 'Fecha' if tipo_reporte == 'diario' else f'Rango de Fechas ({rango_fechas})')
     worksheet.write(0, 3, 'Turnos Atendidos')
     worksheet.write(0, 4, 'Tiempo Promedio (minutos)')
     worksheet.write(0, 5, 'Hora Pico')
@@ -148,37 +149,67 @@ def generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, tot
     return 'reporte_turnos.xlsx'
 
 
-def enviar_correo(reporte_path):
-    from_address = 'juangarciagrracc@gmail.com'
+def enviar_correo(reporte_path, tipo_reporte, rango_fechas=None):
+    from_address = 'tu_correo@gmail.com'
     to_address = 'destinatario@correo.com'
-    subject = 'Reporte de Turnos del Día'
-    body = 'Adjunto el reporte de turnos del día con indicadores de rendimiento.'
+    subject = f'Reporte de {tipo_reporte}'
 
+    # Día actual
+    dia_actual = datetime.now().strftime("%d-%m-%Y")
+    
+    # Descripción con la fecha
+    if tipo_reporte == 'semanal' or tipo_reporte == 'mensual':
+        body = f'Adjunto el {tipo_reporte} del rango de fechas: {rango_fechas}.'
+    else:
+        body = f'Adjunto el reporte del día: {dia_actual}.'
+    
     msg = MIMEMultipart()
     msg['From'] = from_address
     msg['To'] = to_address
     msg['Subject'] = subject
     msg.attach(MIMEText(body, 'plain'))
 
-    attachment = open(reporte_path, 'rb')
-    part = MIMEBase('application', 'octet-stream')
-    part.set_payload(attachment.read())
-    encoders.encode_base64(part)
-    part.add_header('Content-Disposition', f"attachment; filename= {os.path.basename(reporte_path)}")
-    msg.attach(part)
+    # Adjuntar el archivo
+    with open(reporte_path, 'rb') as attachment:
+        part = MIMEBase('application', 'octet-stream')
+        part.set_payload(attachment.read())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition', f"attachment; filename= {os.path.basename(reporte_path)}")
+        msg.attach(part)
 
+    # Enviar el correo
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
     server.login(from_address, 'tu_contraseña')
-    text = msg.as_string()
-    server.sendmail(from_address, to_address, text)
+    server.sendmail(from_address, to_address, msg.as_string())
     server.quit()
 
 if __name__ == "__main__":
     conn = conectar_db()
     if conn:
-        turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo = obtener_indicadores_por_usuario(conn)
-        reporte_path = generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo)
-        #enviar_correo(reporte_path)  # Enviar el correo con el archivo adjunto
-        conn.close()
+        # Reporte diario
+        if datetime.now().weekday() < 5:  # Lunes a viernes
+            turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo = obtener_indicadores_por_usuario(conn)
+            reporte_path = generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, 'diario')
+            #enviar_correo(reporte_path, 'diario')
 
+        # Reporte semanal
+        if datetime.now().weekday() == 4:  # Viernes
+            fecha_inicio_semana = (datetime.now() - timedelta(days=datetime.now().weekday())).strftime("%d-%m-%Y")
+            fecha_fin_semana = datetime.now().strftime("%d-%m-%Y")
+            rango_fechas = f'{fecha_inicio_semana} a {fecha_fin_semana}'
+            turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo = obtener_indicadores_por_usuario(conn)
+            reporte_path = generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, 'semanal', rango_fechas)
+            #enviar_correo(reporte_path, 'semanal', rango_fechas)
+
+        # Reporte mensual
+        ultimo_dia_mes = (datetime.now() + timedelta(days=1)).month != datetime.now().month
+        if ultimo_dia_mes:
+            fecha_inicio_mes = datetime.now().replace(day=1).strftime("%d-%m-%Y")
+            fecha_fin_mes = datetime.now().strftime("%d-%m-%Y")
+            rango_fechas = f'{fecha_inicio_mes} a {fecha_fin_mes}'
+            turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo = obtener_indicadores_por_usuario(conn)
+            reporte_path = generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, 'mensual', rango_fechas)
+            #enviar_correo(reporte_path, 'mensual', rango_fechas)
+
+        conn.close()
