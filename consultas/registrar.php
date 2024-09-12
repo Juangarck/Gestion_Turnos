@@ -60,9 +60,9 @@
 					if (mysqli_num_rows($resultado2) > 0) {
 						// Si existe el cliente, obtener su id
 						$cliente = mysqli_fetch_assoc($resultado2);
-						$cliente_id = $cliente['id'];
+						$idCliente = $cliente['id'];
 
-						$query_turno = "INSERT INTO turnos (turno, cliente_id, fechaRegistro) VALUES ('$turno', '$cliente_id', NOW())";
+						$query_turno = "INSERT INTO turnos (turno, idCliente, fechaRegistro) VALUES ('$turno', '$idCliente', NOW())";
 						mysqli_query($con, $query_turno);
 
 						$respuesta = array('status' => 'success', 'message' => 'Turno registrado exitosamente', 'turno'=>$turno);

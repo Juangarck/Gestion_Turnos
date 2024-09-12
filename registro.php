@@ -27,13 +27,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errores[] = "La cédula es obligatoria.";
     }
     if (empty($telefono)) {
-        $error[] = "El telefono es obligatorio.";
+        $error[] = "El número de celular es obligatorio.";
     }
 
     // Validar formato de cédula
     if (!preg_match("/^[0-9]{5,20}$/", $cedula)) {
         $errores[] = "El formato de la cédula es incorrecto.";
     }
+
+        // Validar formato de telefono
+        if (!preg_match("/^[0-9]{4,20}$/", $telefono)) {
+            $errores[] = "El formato del telefono es incorrecto.";
+        }
 
     // Validar formato de correo electrónico si se ha ingresado
     if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -78,18 +83,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php if ($exito): ?>
             <div>
                 <p>¡Registro exitoso! Su cédula es <?php echo htmlspecialchars($cedula); ?>.</p>
+                <p>Apreciado Usuario, ya se completó su registro, AHORA, <strong>NO OLVIDE SOLICITAR SU TURNO</strong>.</p>
                 <a href="solicitar_turno.php">Volver a la página principal</a>
             </div>
         <?php else: ?>
-            <form method="POST" action="registro.php">
+            <form method="POST" action="registro.php" autocomplete="off">
                 <label for="nombre">Nombre:</label>
                 <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($nombre); ?>" required>
 
                 <label for="cedula">Cédula:</label>
                 <input type="text" id="cedula" name="cedula" value="<?php echo htmlspecialchars($cedula); ?>" required>
 
-                <label for="telefono">Teléfono:</label>
-                <input type="text" id="telefono" name="telefono" value="<?php echo htmlspecialchars($telefono); ?>">
+                <label for="telefono">Celular:</label>
+                <input type="text" id="telefono" name="telefono" value="<?php echo htmlspecialchars($telefono); ?>" required>
 
                 <label for="email">Correo Electrónico:</label>
                 <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>">

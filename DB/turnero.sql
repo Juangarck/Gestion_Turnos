@@ -46,7 +46,7 @@ CREATE TABLE `atencion` (
 
 CREATE TABLE `cajas` (
   `id` int(11) NOT NULL,
-  `nombre` varchar(10) COLLATE utf8_spanish2_ci NOT NULL,
+  `nombre` varchar(50) COLLATE utf8_spanish2_ci NOT NULL,
   `idUsuario` int(11) NOT NULL,
   `fecha_de_registro` datetime NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
@@ -56,11 +56,11 @@ CREATE TABLE `cajas` (
 --
 
 INSERT INTO `cajas` (`id`, `nombre`, `idUsuario`, `fecha_de_registro`) VALUES
-(1, 'Caja 1', 8, '0000-00-00 00:00:00'),
-(2, 'Caja 2', 9, '0000-00-00 00:00:00'),
-(3, 'Caja 3', 10, '0000-00-00 00:00:00'),
-(4, 'Caja 4', 11, '0000-00-00 00:00:00'),
-(5, 'Caja 5', 12, '2020-02-14 17:27:38');
+(1, 'Ventanilla 1', 8, '0000-00-00 00:00:00'),
+(2, 'Ventanilla 2', 9, '0000-00-00 00:00:00'),
+(3, 'Ventanilla 3', 10, '0000-00-00 00:00:00'),
+(4, 'Ventanilla 4', 11, '0000-00-00 00:00:00'),
+(5, 'Ventanilla 5', 12, '2020-02-14 17:27:38');
 
 -- --------------------------------------------------------
 
@@ -102,7 +102,7 @@ CREATE TABLE `noticias` (
 -- Estructura de tabla para los clientes o interesados
 -- 
 CREATE TABLE `clientes` (
-    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `id` int(11) NOT NULL,
     `nombre` VARCHAR(100) NOT NULL,
     `cedula` VARCHAR(20) UNIQUE NOT NULL,
     `telefono` VARCHAR(20),
@@ -119,13 +119,9 @@ CREATE TABLE `turnos` (
   `id` int(11) NOT NULL,
   `turno` varchar(5) COLLATE utf8_spanish2_ci NOT NULL,
   `atendido` int(11) NOT NULL,
+  `idCliente` int(11) NOT NULL,
   `fechaRegistro` datetime NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
-ALTER TABLE turnos
-ADD cliente_id INT,
-ADD CONSTRAINT fk_cliente
-FOREIGN KEY (cliente_id) REFERENCES clientes(id);
--- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `usuarios`
@@ -133,8 +129,8 @@ FOREIGN KEY (cliente_id) REFERENCES clientes(id);
 
 CREATE TABLE `usuarios` (
   `id` int(11) NOT NULL,
-  `usuario` varchar(50) COLLATE utf8_spanish2_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8_spanish2_ci NOT NULL,
+  `usuario` varchar(100) COLLATE utf8_spanish2_ci NOT NULL,
+  `password` varchar(100) COLLATE utf8_spanish2_ci NOT NULL,
   `idCaja` int(11) NOT NULL,
   `fecha_alta` datetime NOT NULL,
   `fecha_actualizacion` datetime NOT NULL
@@ -159,13 +155,19 @@ INSERT INTO `usuarios` (`id`, `usuario`, `password`, `idCaja`, `fecha_alta`, `fe
 -- Indices de la tabla `atencion`
 --
 ALTER TABLE `atencion`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD CONSTRAINT fk_funcionario FOREIGN KEY (idUsuario) REFERENCES usuarios(id),
+  ADD CONSTRAINT fk_turno FOREIGN KEY (idTurno) REFERENCES turnos(id),
+  ADD CONSTRAINT fk_ventanilla FOREIGN KEY (idCaja) REFERENCES cajas(id);
+
 
 --
 -- Indices de la tabla `cajas`
 --
 ALTER TABLE `cajas`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD CONSTRAINT fk_usuario
+  FOREIGN KEY (idUsuario) REFERENCES usuarios(id);
 
 --
 -- Indices de la tabla `info_empresa`
@@ -183,12 +185,18 @@ ALTER TABLE `noticias`
 -- Indices de la tabla `turnos`
 --
 ALTER TABLE `turnos`
-  ADD PRIMARY KEY (`id`);
-
+  ADD PRIMARY KEY (`id`),
+  ADD CONSTRAINT fk_cliente
+  FOREIGN KEY (idCliente) REFERENCES clientes(id);
 --
--- Indices de la tabla `usuarios`
+-- Indices de la tabla `usuarios` SE OMITE AGREGAR LA FK DE CAJA, PORQUE YA ESTA REFERENCIADA EN CAJA Y SE DEBE MODIFCAR EL ESQUEMA DE LA DB
 --
 ALTER TABLE `usuarios`
+  ADD PRIMARY KEY (`id`);
+--
+-- Indices de la tabla `clientes`
+--
+ALTER TABLE `clientes`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -205,7 +213,7 @@ ALTER TABLE `atencion`
 -- AUTO_INCREMENT de la tabla `cajas`
 --
 ALTER TABLE `cajas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `info_empresa`
@@ -226,10 +234,16 @@ ALTER TABLE `turnos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `clientes`
+--
+ALTER TABLE `clientes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
