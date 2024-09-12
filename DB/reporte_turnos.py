@@ -106,7 +106,7 @@ def generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, tot
     imagen_path = 'C:/xampp/htdocs/turnero/img/49550310_598832710562102_5995102219237874750_n.jpg'
     if os.path.exists(imagen_path):
         worksheet.merge_range('A1:A2', '', formato_centrado)
-        worksheet.insert_image('A1', imagen_path, {'x_offset': 5, 'y_offset': 5, 'x_scale': 0.25, 'y_scale': 0.25})
+        worksheet.insert_image('A1', imagen_path, {'x_offset': 20, 'y_offset': 2, 'x_scale': 0.25, 'y_scale': 0.30})
     else:
         print(f"Advertencia: La imagen en '{imagen_path}' no se encontró.")
 
@@ -165,13 +165,13 @@ def generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, tot
             worksheet.write(r, c, '')
 
     # Ajuste automático de columnas
-    worksheet.set_column('A:A', 15)
+    worksheet.set_column('A:A', 28)
     worksheet.set_column('B:B', 20)
     worksheet.set_column('C:C', 25)
     worksheet.set_column('D:D', 15)
-    worksheet.set_column('E:E', 15)
-    worksheet.set_column('F:F', 15)
-    worksheet.set_column('G:G', 15)
+    worksheet.set_column('E:E', 25)
+    worksheet.set_column('F:F', 10)
+    worksheet.set_column('G:G', 17)
 
     workbook.close()
     return reporte_nombre
@@ -217,7 +217,7 @@ def enviar_correo(reporte_path, tipo_reporte, rango_fechas=None):
     server.quit()
 
     # Eliminar el archivo después de enviarlo
-    #os.remove(reporte_path)
+    os.remove(reporte_path)
     
 if __name__ == "__main__":
     conn = conectar_db()
@@ -226,7 +226,7 @@ if __name__ == "__main__":
         if datetime.now().weekday() < 5:  # Lunes a viernes
             turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo = obtener_indicadores_por_usuario(conn)
             reporte_path = generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, 'diario')
-            #enviar_correo(reporte_path, 'diario')
+            enviar_correo(reporte_path, 'diario')
 
         # Reporte semanal
         if datetime.now().weekday() == 4:  # Viernes
