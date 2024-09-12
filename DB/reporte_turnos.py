@@ -148,17 +148,19 @@ def generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, tot
     worksheet.write(row + 4, 1, total_clientes_tiempo[1])  # Tiempo Promedio de Espera
 
     workbook.close()
-    return 'reporte_turnos.xlsx'
+    return reporte_nombre
 
 
 def enviar_correo(reporte_path, tipo_reporte, rango_fechas=None):
     # Cargar las variables del archivo .env
     load_dotenv()
-
+    name_account = os.getenv('SERVICE')
     from_address = os.getenv('FROM_ADDRESS')
     to_address = os.getenv('TO_ADDRESS')
     password_account = os.getenv('PASSWORD_ACCOUNT')
     subject = f'Reporte de {tipo_reporte}'
+    print(f"Correo: {from_address}, Contraseña: {password_account}")
+
 
     # Día actual
     dia_actual = datetime.now().strftime("%d-%m-%Y")
@@ -186,7 +188,6 @@ def enviar_correo(reporte_path, tipo_reporte, rango_fechas=None):
     # Enviar el correo
     server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
     server.ehlo()
-    server.starttls()
     server.login(from_address, password_account)
     server.sendmail(from_address, to_address, msg.as_string())
     server.quit()
@@ -198,7 +199,7 @@ if __name__ == "__main__":
         if datetime.now().weekday() < 5:  # Lunes a viernes
             turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo = obtener_indicadores_por_usuario(conn)
             reporte_path = generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, 'diario')
-            #enviar_correo(reporte_path, 'diario')
+            enviar_correo(reporte_path, 'diario')
 
         # Reporte semanal
         if datetime.now().weekday() == 4:  # Viernes
@@ -207,7 +208,7 @@ if __name__ == "__main__":
             rango_fechas = f'{fecha_inicio_semana} a {fecha_fin_semana}'
             turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo = obtener_indicadores_por_usuario(conn)
             reporte_path = generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, 'semanal', rango_fechas)
-            #enviar_correo(reporte_path, 'semanal', rango_fechas)
+            enviar_correo(reporte_path, 'semanal', rango_fechas)
 
         # Reporte mensual
         ultimo_dia_mes = (datetime.now() + timedelta(days=1)).month != datetime.now().month
@@ -217,6 +218,6 @@ if __name__ == "__main__":
             rango_fechas = f'{fecha_inicio_mes} a {fecha_fin_mes}'
             turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo = obtener_indicadores_por_usuario(conn)
             reporte_path = generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, 'mensual', rango_fechas)
-            #enviar_correo(reporte_path, 'mensual', rango_fechas)
+            enviar_correo(reporte_path, 'mensual', rango_fechas)
 
         conn.close()
