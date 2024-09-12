@@ -2,7 +2,7 @@
 	date_default_timezone_set('America/Bogota');
 	if(isset($_POST['registrar'])){
 
-		require_once('../funciones/conexion.php');
+		include('../funciones/conexion.php');
 		require_once('../funciones/funciones.php');
 
 		$respuesta=[];
@@ -38,6 +38,7 @@
 			break;
 			case 'turno':
 				// Obtener el último turno
+				$error = "Error al obtener turno";
 				$sql = "SELECT turno FROM turnos ORDER BY id DESC LIMIT 1";
 				$resultado = consulta($con, $sql, $error);
 				$turno = "001";
@@ -54,23 +55,24 @@
 
 					// Buscar el cliente en la base de datos
 					$query = "SELECT id FROM clientes WHERE cedula = '$cedula'";
-					$resultado = mysqli_query($con, $query);
+					$resultado2 = mysqli_query($con, $query);
 
-					if (mysqli_num_rows($resultado) > 0) {
+					if (mysqli_num_rows($resultado2) > 0) {
 						// Si existe el cliente, obtener su id
-						$cliente = mysqli_fetch_assoc($resultado);
+						$cliente = mysqli_fetch_assoc($resultado2);
 						$cliente_id = $cliente['id'];
 
 						$query_turno = "INSERT INTO turnos (turno, cliente_id, fechaRegistro) VALUES ('$turno', '$cliente_id', NOW())";
 						mysqli_query($con, $query_turno);
 
-						echo json_encode(['status' => 'success', 'message' => 'Turno registrado exitosamente']);
+						$respuesta = array('status' => 'success', 'message' => 'Turno registrado exitosamente', 'turno'=>$turno);
 					} else {
 						// Si el cliente no existe, redireccionar al registro
-						echo json_encode(['status' => 'error', 'message' => 'Cliente no encontrado, redireccionando a registro']);
+						$respuesta = array('status' => 'error', 'message' => 'Cliente no encontrado, redireccionando a registro');
 					}
 				}
-							
+				//parcialmente comentariado por erorres
+			/*				
 				if(consulta($con, $sql, $error)) {
 					// Llamada al script Python para imprimir el ticket
 					$nombre_esc = escapeshellarg($nombre);
@@ -83,6 +85,7 @@
 				} else {
 					$respuesta = array('status' => 'error', 'mensaje' => 'Error al registrar el turno', 'turno' => '000');
 				}
+					*/
 				break;
 			
 						

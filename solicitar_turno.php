@@ -5,6 +5,7 @@
     <title>Solicitar turno</title>
     <link rel="stylesheet" type="text/css" href="css/generales.css">
     <link rel="stylesheet" type="text/css" href="css/solicitarTurno.css">
+    <link rel="stylesheet" type="text/css" href="css/sweetalert2.min.css">
 </head>
 <body>
     <div class="contenedor-principal">
@@ -46,16 +47,23 @@
             </header>
             <div class="clear"></div>
             <span class="datos-turno">Último Turno: <span id="turno"><?php echo $turno; ?></span></span>
-                <form id="formCedula" method="POST" action="verificar_cedula.php">
+                <form id="formCedula" method="POST" autocomplete="off">
                     <label for="cedula">Ingrese su cédula de ciudadanía:</label>
                     <input type="text" id="cedula" name="cedula" required>
-                    <button type="submit">Verificar</button>
+                    <button type="submit" id="verificar" class="btn">Verificar</button>
                 </form>
         </div>
+
+            <div>
+                
+            </div>
+
     </div>
     <script src="js/jquery-3.1.0.min.js"></script>
+    <script src="js/sweetalert2.all.min.js"></script>   
     <script src="js/funcionesGenerales.js"></script>
     <script src="js/solicitarTurno.js"></script>
+    
 </body>
 </html>
 
