@@ -1,13 +1,15 @@
 import pymysql
 import pandas as pd
-from datetime import datetime, timedelta
 import smtplib
 import xlsxwriter
+import os
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
-import os
+
 from openpyxl import load_workbook
 
 # Conexión a la base de datos
@@ -150,8 +152,12 @@ def generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, tot
 
 
 def enviar_correo(reporte_path, tipo_reporte, rango_fechas=None):
-    from_address = 'tu_correo@gmail.com'
-    to_address = 'destinatario@correo.com'
+    # Cargar las variables del archivo .env
+    load_dotenv()
+
+    from_address = os.getenv('FROM_ADDRESS')
+    to_address = os.getenv('TO_ADDRESS')
+    password_account = os.getenv('PASSWORD_ACCOUNT')
     subject = f'Reporte de {tipo_reporte}'
 
     # Día actual
@@ -178,9 +184,10 @@ def enviar_correo(reporte_path, tipo_reporte, rango_fechas=None):
         msg.attach(part)
 
     # Enviar el correo
-    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    server.ehlo()
     server.starttls()
-    server.login(from_address, 'tu_contraseña')
+    server.login(from_address, password_account)
     server.sendmail(from_address, to_address, msg.as_string())
     server.quit()
 

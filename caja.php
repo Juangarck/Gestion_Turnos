@@ -57,9 +57,9 @@
 				
 				?>
                 
-                <h1>Caja <?php echo $_SESSION['idCaja'];?></h1>
+                <h1>Ventanilla <?php echo $_SESSION['idCaja'];?></h1>
                 
-                <span class="datos-usuario">Cajero: <?php echo $_SESSION['usuario'];?></span>
+                <span class="datos-usuario">Funcionario: <?php echo $_SESSION['usuario'];?></span>
                 <span class="datos-turno">Turno: <span id="turno">000</span></span>
             
                 <input type="submit" name="atender" id="atender" value="Atender">

@@ -86,14 +86,14 @@ $('#formCedula').submit(function(){
                                 +"<br/> <strong>RECUERDA ACERCARTE CON TU CÉDULA </strong>",
                                 icon: "info",
                                 showConfirmButton: false,
-                                timer: 3000
+                                timer: 15000
                               }); 
                               
                               
                               setTimeout(function() {
                                 location.reload();  
                                 // Recargar la página despues del tiempo de mostrar el mensaje para que se actualice el de turnos (esto se puede mejorar a futuro)
-                            }, 3000);
+                            }, 20000);
                         }else{
                             window.location.href = 'registro.php';
                         }
