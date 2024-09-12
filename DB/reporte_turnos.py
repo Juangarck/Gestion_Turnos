@@ -1,5 +1,4 @@
 import pymysql
-import pandas as pd
 import smtplib
 import xlsxwriter
 import os
@@ -9,8 +8,6 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
-
-from openpyxl import load_workbook
 
 # Conexión a la base de datos
 def conectar_db():
@@ -98,78 +95,105 @@ def obtener_indicadores_por_usuario(conn):
     return turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo
 
 def generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, tipo_reporte, rango_fechas=None):
-    # Crear un nuevo archivo Excel con el tipo de reporte en el nombre
     reporte_nombre = f'reporte_turnos_{tipo_reporte}.xlsx'
     workbook = xlsxwriter.Workbook(reporte_nombre)
     worksheet = workbook.add_worksheet()
 
-    # Escribir encabezados
-    worksheet.write(0, 0, 'Usuario ID')
-    worksheet.write(0, 1, 'Ventanilla')
-    worksheet.write(0, 2, 'Fecha' if tipo_reporte == 'diario' else f'Rango de Fechas ({rango_fechas})')
-    worksheet.write(0, 3, 'Turnos Atendidos')
-    worksheet.write(0, 4, 'Tiempo Promedio (minutos)')
-    worksheet.write(0, 5, 'Hora Pico')
-    worksheet.write(0, 6, 'Turnos en Hora Pico')
+    formato_bold_centrado = workbook.add_format({'bold': True, 'align': 'center', 'valign': 'vcenter'})
+    formato_centrado = workbook.add_format({'align': 'center', 'valign': 'vcenter'})
+    formato_bordes = workbook.add_format({'border': 1})
 
-    # Llenar los datos de Turnos Atendidos
-    row = 1
-    for turno in turnos:
-        worksheet.write(row, 0, turno[0])  # Usuario ID
-        worksheet.write(row, 1, turno[1])  # Usuario
-        worksheet.write(row, 2, str(turno[2]))  # Fecha
-        worksheet.write(row, 3, turno[3])  # Turnos Atendidos
-        row += 1
+    imagen_path = 'C:/xampp/htdocs/turnero/img/49550310_598832710562102_5995102219237874750_n.jpg'
+    if os.path.exists(imagen_path):
+        worksheet.merge_range('A1:A2', '', formato_centrado)
+        worksheet.insert_image('A1', imagen_path, {'x_offset': 5, 'y_offset': 5, 'x_scale': 0.25, 'y_scale': 0.25})
+    else:
+        print(f"Advertencia: La imagen en '{imagen_path}' no se encontró.")
 
-    # Llenar los datos de Tiempos Promedio
-    row = 1
-    for tiempo in tiempos:
-        worksheet.write(row, 4, float(tiempo[1]))  # Tiempo Promedio en minutos
-        row += 1
+    total_columnas = 7
+    columna_combinada = f'B1:{chr(65 + total_columnas - 1)}1'
+    worksheet.merge_range(columna_combinada, 'AGENCIA CATASTRAL DE CUNDINAMARCA', formato_bold_centrado)
 
-    # Llenar los datos de Hora Pico por cajera
-    row = 1
-    for hora in hora_pico_por_cajera:
-        worksheet.write(row, 5, hora[2])  # Hora Pico
-        worksheet.write(row, 6, hora[3])  # Turnos en Hora Pico
-        row += 1
+    columna_combinada2 = f'B2:{chr(65 + total_columnas - 1)}2'
+    worksheet.merge_range(columna_combinada2, 'INFORME DE RENDIMIENTOS ATENCIÓN DE USUARIOS', formato_centrado)
 
-    # Saltar dos filas para las cifras globales
+    worksheet.write(2, 0, 'Usuario ID')
+    worksheet.write(2, 1, 'Funcionario')
+    worksheet.write(2, 2, 'Fecha' if tipo_reporte == 'diario' else f'Rango de Fechas ({rango_fechas})')
+    worksheet.write(2, 3, 'Turnos Atendidos')
+    worksheet.write(2, 4, 'Tiempo Promedio (espera mn)')
+    worksheet.write(2, 5, 'Hora Pico')
+    worksheet.write(2, 6, 'Turnos en Hora Pico')
+
+    row = 3
+    if turnos:
+        for turno in turnos:
+            worksheet.write(row, 0, turno[0])
+            worksheet.write(row, 1, turno[1])
+            worksheet.write(row, 2, str(turno[2]))
+            worksheet.write(row, 3, turno[3])
+            row += 1
+
+    if tiempos:
+        row = 3
+        for tiempo in tiempos:
+            worksheet.write(row, 4, float(tiempo[1]))
+            row += 1
+
+    if hora_pico_por_cajera:
+        row = 3
+        for hora in hora_pico_por_cajera:
+            worksheet.write(row, 5, hora[2])
+            worksheet.write(row, 6, hora[3])
+            row += 1
+
     row += 2
     worksheet.write(row, 0, 'Hora Pico Global')
-    worksheet.write(row, 1, hora_pico_global[0])  # Hora Pico Global
+    worksheet.write(row, 1, hora_pico_global[0])
     worksheet.write(row + 1, 0, 'Turnos en Hora Pico Global')
-    worksheet.write(row + 1, 1, hora_pico_global[1])  # Turnos en Hora Pico Global
+    worksheet.write(row + 1, 1, hora_pico_global[1])
 
-    # Llenar los datos de total de clientes atendidos y tiempo promedio
     worksheet.write(row + 3, 0, 'Total Clientes Atendidos')
-    worksheet.write(row + 3, 1, total_clientes_tiempo[0])  # Total Clientes Atendidos
+    worksheet.write(row + 3, 1, total_clientes_tiempo[0])
     worksheet.write(row + 4, 0, 'Tiempo Promedio de Espera (min)')
-    worksheet.write(row + 4, 1, total_clientes_tiempo[1])  # Tiempo Promedio de Espera
+    worksheet.write(row + 4, 1, total_clientes_tiempo[1])
+
+    max_row = row + 4
+    max_col = total_columnas - 1
+    for r in range(2, max_row + 1):
+        for c in range(max_col + 1):
+            worksheet.write(r, c, '')
+
+    # Ajuste automático de columnas
+    worksheet.set_column('A:A', 15)
+    worksheet.set_column('B:B', 20)
+    worksheet.set_column('C:C', 25)
+    worksheet.set_column('D:D', 15)
+    worksheet.set_column('E:E', 15)
+    worksheet.set_column('F:F', 15)
+    worksheet.set_column('G:G', 15)
 
     workbook.close()
     return reporte_nombre
 
 
 def enviar_correo(reporte_path, tipo_reporte, rango_fechas=None):
+    # Día actual
+    dia_actual = datetime.now().strftime("%d-%m-%Y")
+
     # Cargar las variables del archivo .env
     load_dotenv()
     name_account = os.getenv('SERVICE')
     from_address = os.getenv('FROM_ADDRESS')
     to_address = os.getenv('TO_ADDRESS')
     password_account = os.getenv('PASSWORD_ACCOUNT')
-    subject = f'Reporte de {tipo_reporte}'
-    print(f"Correo: {from_address}, Contraseña: {password_account}")
-
-
-    # Día actual
-    dia_actual = datetime.now().strftime("%d-%m-%Y")
-    
+    subject = f'Reporte de Rendimientos Atención Ventanillas {tipo_reporte} del {dia_actual}.'
+   
     # Descripción con la fecha
     if tipo_reporte == 'semanal' or tipo_reporte == 'mensual':
-        body = f'Adjunto el {tipo_reporte} del rango de fechas: {rango_fechas}.'
+        body = f'Adjunto el {tipo_reporte} del rango de fechas: {rango_fechas}.Asociado con los rendimientos de los funcionarios en las ventanillas de atención al usuario.'
     else:
-        body = f'Adjunto el reporte del día: {dia_actual}.'
+        body = f'Adjunto el reporte del día: {dia_actual}. Asociado con los rendimientos de los funcionarios en las ventanillas de atención al usuario.'
     
     msg = MIMEMultipart()
     msg['From'] = from_address
@@ -192,6 +216,9 @@ def enviar_correo(reporte_path, tipo_reporte, rango_fechas=None):
     server.sendmail(from_address, to_address, msg.as_string())
     server.quit()
 
+    # Eliminar el archivo después de enviarlo
+    #os.remove(reporte_path)
+    
 if __name__ == "__main__":
     conn = conectar_db()
     if conn:
@@ -199,7 +226,7 @@ if __name__ == "__main__":
         if datetime.now().weekday() < 5:  # Lunes a viernes
             turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo = obtener_indicadores_por_usuario(conn)
             reporte_path = generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, 'diario')
-            enviar_correo(reporte_path, 'diario')
+            #enviar_correo(reporte_path, 'diario')
 
         # Reporte semanal
         if datetime.now().weekday() == 4:  # Viernes
