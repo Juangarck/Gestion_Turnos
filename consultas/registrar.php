@@ -128,7 +128,7 @@
 						$idTurno=limpiar($con,$resultado['id']);
 						$idUsuario=1;//$_SESSION['idUsuario'];
 						
-						//poner el turno en la tabla de atenciones
+						//poner el turno en la tabla de atenciones se agrega el turno idTurno en la tabla de Atencion
 						$sql="insert into atencion (turno,idCaja,idUsuario,fechaAtencion, idTurno) values ('$turno','$idCaja','$idUsuario','$fecha', '$idTurno')";
 						$error="Error al registrar el turno en atencion";
 						$registrar=consulta( $con,$sql,$error);
