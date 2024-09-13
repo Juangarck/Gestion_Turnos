@@ -102,8 +102,16 @@ def generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, tot
     formato_bold_centrado = workbook.add_format({'bold': True, 'align': 'center', 'valign': 'vcenter'})
     formato_centrado = workbook.add_format({'align': 'center', 'valign': 'vcenter'})
     formato_bordes = workbook.add_format({'border': 1})
+    
+    # Obtiene la ruta actual donde se ejecuta el script
+    script_path = os.path.dirname(os.path.abspath(__file__))
 
-    imagen_path = 'C:/xampp/htdocs/turnero/img/49550310_598832710562102_5995102219237874750_n.jpg'
+    # Navega una carpeta hacia atrás y luego hacia la subcarpeta 'img'
+    image_path = os.path.join(script_path, '..', 'img', '49550310_598832710562102_5995102219237874750_n.jpg')
+
+    # Normaliza la ruta (para evitar problemas con diferentes sistemas operativos)
+    imagen_path = os.path.normpath(image_path)
+
     if os.path.exists(imagen_path):
         worksheet.merge_range('A1:A2', '', formato_centrado)
         worksheet.insert_image('A1', imagen_path, {'x_offset': 20, 'y_offset': 2, 'x_scale': 0.25, 'y_scale': 0.30})

@@ -86,14 +86,14 @@ $('#formCedula').submit(function(){
                                 +"<br/> <strong>RECUERDA ACERCARTE CON TU CÉDULA </strong>",
                                 icon: "info",
                                 showConfirmButton: false,
-                                timer: 15000
+                                timer: 10000
                               }); 
                               
                               
                               setTimeout(function() {
                                 location.reload();  
                                 // Recargar la página despues del tiempo de mostrar el mensaje para que se actualice el de turnos (esto se puede mejorar a futuro)
-                            }, 20000);
+                            }, 10000);
                         }else{
                             window.location.href = 'registro.php';
                         }
@@ -103,8 +103,7 @@ $('#formCedula').submit(function(){
                     error: function(xhr, status, error) {
                         console.error("Error en la solicitud de registrar el turno:", error);
                     }
-                });
-                
+                }); 
             }
         }
     })

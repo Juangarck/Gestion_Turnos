@@ -125,12 +125,13 @@
 						$resultado=mysqli_fetch_assoc($buscar);			
 						$fecha=date("Y-m-d H:i:s");
 						$turno=limpiar($con,$resultado['turno']);
+						$idTurno=limpiar($con,$resultado['id']);
 						$idUsuario=1;//$_SESSION['idUsuario'];
 						
 						//poner el turno en la tabla de atenciones
-						$sql="insert into atencion (turno,idCaja,idUsuario,fechaAtencion) values ('$turno','$idCaja','$idUsuario','$fecha')";
+						$sql="insert into atencion (turno,idCaja,idUsuario,fechaAtencion, idTurno) values ('$turno','$idCaja','$idUsuario','$fecha', '$idTurno')";
 						$error="Error al registrar el turno en atencion";
-						$registrar=consulta($con,$sql,$error);
+						$registrar=consulta( $con,$sql,$error);
 					
 						//poner en la tabla turnos que caja lo esta atendiendo
 						$sql="update turnos set atendido='$idCaja' where turno='$turno'";
