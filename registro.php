@@ -1,6 +1,6 @@
 <?php
-include 'funciones/conexion.php'; // Incluye el archivo de conexión
-include '/funciones/funciones.php';
+include './funciones/conexion.php'; // Incluye el archivo de conexión
+include './funciones/funciones.php';
 date_default_timezone_set('America/Bogota');
 
 $errores = [];
