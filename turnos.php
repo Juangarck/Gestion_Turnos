@@ -9,6 +9,7 @@
         <link rel="stylesheet" type="text/css" href="css/generales.css">
         <link rel="stylesheet" type="text/css" href="css/turnos.css">
         <link rel="stylesheet" type="text/css" href="css/responsivo-turnos.css">
+        <link rel="stylesheet" type="text/css" href="css/sweetalert2.min.css">
     
     </head>
 	<body>
