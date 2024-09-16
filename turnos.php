@@ -46,7 +46,12 @@
             $turno = mysqli_fetch_assoc($searchTA);
             $numeroTurno = $turno['turno'];
             $caja = $turno['idCaja'];
-            $cliente = $turno['nombre'];
+            $nombreCompleto = $turno['nombre'];
+            $nombreArray = explode(' ', $nombreCompleto);
+            $primerNombre = $nombreArray[0];
+            $primerApellido = isset($nombreArray[2]) ? $nombreArray[2][0] : (isset($nombreArray[1]) ? $nombreArray[1][0] : '');
+            $nombreFormateado = $primerNombre . ' ' . $primerApellido;
+            $cliente = $nombreFormateado;
 
         } else {
 
@@ -87,6 +92,12 @@
                         <div class="columna-tablaTurnos c3">
                             <div class="tabla-turnosArriba">Ventanilla</div>
                             <div class="tabla-turnosAbajo" id="verCaja"><?php echo $caja; ?></div>
+                        </div>
+                    </div>
+                    <div class="columna-tablaTurnos">
+                        <div class="columna-tablaTurnos c3">
+                            <div class="tabla-turnosArriba">Usuario</div>
+                            <div class="tabla-turnosAbajo" id="verCaja"><?php echo $cliente; ?></div>
                         </div>
                     </div>
 

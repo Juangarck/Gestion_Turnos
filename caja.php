@@ -61,7 +61,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['password'])) {
 
 				<span class="datos-usuario">Funcionario: <?php echo $_SESSION['usuario']; ?></span>
 				<span class="datos-turno">Turno: <span id="turno"><?php echo $turno; ?></span></span>
-				<div id="cliente_atender"></div>
+				<div class="datos-turno" id="cliente_atender"></div>
 
 
 				<!--<input type="submit" name="atender" id="atender" value="Atender"> -->
@@ -113,7 +113,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['password'])) {
 						var nombre = data.nombre;
 						var cedula = data.cedula;
 						if (nombre != '') {
-							var mensaje = "Nombre: " + nombre + "<Br/>Cédula: " + cedula;
+							var mensaje = "Nombre: " + nombre + "<Br/><Br/>Cédula: " + cedula;
 							$('#cliente_atender').html(mensaje);
 						}
 					}
