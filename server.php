@@ -9,7 +9,7 @@
 	* mientras llega. */
 	ob_implicit_flush();
 
-	$host = '192.168.0.1'; //host
+	$host = '192.168.43.234'; //host
 	$port = '8888'; //port
 	$null = NULL; //null var
 	$address = '0.0.0.0';//accept from anywhere
