@@ -2,18 +2,32 @@
 
 /* CSS Document */
 @media (max-width:500px){
-	.tabla-turnos th, .tabla-turnos td {
-        font-size: 4vw;
-        padding: 2vw;
+	.tabla-turnos th {
+		font-size: 5vw; /* Tamaño de fuente relativo al ancho de la pantalla */
+		color: black;
+		padding: 1.5vw; /* Espacio de relleno relativo al ancho de la pantalla */
+	}
+	.tabla-turnos td {
+		color: black;
+		font-size: 4vw; /* Tamaño de fuente relativo al ancho de la pantalla */
+		padding-bottom: 1vw; /* Espacio de relleno relativo al ancho de la pantalla */
+		text-align: center;
 	}
 }	
 @media (max-width:630px){
 	.contenedor-tablaTurnos{
 		flex-direction: column;
 	}
-	.tabla-turnos th, .tabla-turnos td {
-        font-size: 5vw;
-        padding: 2vw;
+	.tabla-turnos th {
+		font-size: 5vw; /* Tamaño de fuente relativo al ancho de la pantalla */
+		color: black;
+		padding: 1.5vw; /* Espacio de relleno relativo al ancho de la pantalla */
+	}
+	.tabla-turnos td {
+		color: black;
+		font-size: 4vw; /* Tamaño de fuente relativo al ancho de la pantalla */
+		padding-bottom: 1vw; /* Espacio de relleno relativo al ancho de la pantalla */
+		text-align: center;
 	}
 }	
 @media (max-width:750px){
@@ -23,14 +37,28 @@
 	.contenido-derecha{
 		margin-left: 0px;
 	}
-	.tabla-turnos th, .tabla-turnos td {
-        font-size: 4.5vw;
-        padding: 2vw;
+	.tabla-turnos th {
+		font-size: 4vw; /* Tamaño de fuente relativo al ancho de la pantalla */
+		color: black;
+		padding: 1.5vw; /* Espacio de relleno relativo al ancho de la pantalla */
+	}
+	.tabla-turnos td {
+		color: black;
+		font-size: 3vw; /* Tamaño de fuente relativo al ancho de la pantalla */
+		padding-bottom: 1vw; /* Espacio de relleno relativo al ancho de la pantalla */
+		text-align: center;
 	}
 }	
 @media (min-width:960px){
-	.tabla-turnos th, .tabla-turnos td {
-        font-size: 4.5vw;
-        padding: 2vw;
-	}	
+	.tabla-turnos th {
+		font-size: 4vw; /* Tamaño de fuente relativo al ancho de la pantalla */
+		color: black;
+		padding: 1.5vw; /* Espacio de relleno relativo al ancho de la pantalla */
+	}
+	.tabla-turnos td {
+		color: black;
+		font-size: 3vw; /* Tamaño de fuente relativo al ancho de la pantalla */
+		padding-bottom: 1vw; /* Espacio de relleno relativo al ancho de la pantalla */
+		text-align: center;
+	}
 }
