@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php else: ?>
             <form method="POST" action="registro.php" autocomplete="off">
-                <label for="nombre">Nombre:</label>
+                <label for="nombre">Nombres y apellidos:</label>
                 <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($nombre); ?>" required>
 
                 <label for="cedula">Cédula:</label>
