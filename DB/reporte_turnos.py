@@ -138,7 +138,12 @@ def generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, tot
         for turno in turnos:
             worksheet.write(row, 0, turno[0])
             worksheet.write(row, 1, turno[1])
-            worksheet.write(row, 2, str(turno[2]))
+            # Si el reporte es diario, escribir solo la fecha del turno
+            if tipo_reporte == 'diario':
+                worksheet.write(row, 2, str(turno[2]))  # Fecha de turno (día actual)
+            # Si es semanal o mensual, usar el rango de fechas proporcionado
+            else:
+                worksheet.write(row, 2, str(rango_fechas))  # Rango de fechas (p.ej. "09-09-2024 al 13-09-2024")
             worksheet.write(row, 3, turno[3])
             row += 1
 
@@ -195,8 +200,13 @@ def enviar_correo(reporte_path, tipo_reporte, rango_fechas=None):
     from_address = os.getenv('FROM_ADDRESS')
     to_address = os.getenv('TO_ADDRESS')
     password_account = os.getenv('PASSWORD_ACCOUNT')
-    subject = f'Reporte de Rendimientos Atención Ventanillas {tipo_reporte} del {dia_actual}.'
-   
+    
+    # Descripción con la fecha del ASUNTO
+    if tipo_reporte == 'semanal' or tipo_reporte == 'mensual':
+        subject = f'Reporte de Rendimientos Atención Ventanillas del rango de fechas: {rango_fechas}'
+    else:
+        subject = f'Reporte de Rendimientos Atención Ventanillas {tipo_reporte} del {dia_actual}.'
+
     # Descripción con la fecha
     if tipo_reporte == 'semanal' or tipo_reporte == 'mensual':
         body = f'Adjunto el {tipo_reporte} del rango de fechas: {rango_fechas}.Asociado con los rendimientos de los funcionarios en las ventanillas de atención al usuario.'
