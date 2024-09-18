@@ -51,6 +51,7 @@ function procesarAtencion(){
 		var data = conexion.responseText;
 		
 		//enviar los datos recibidos mediante ajax en formato json  al socket
+		console.log(data);
 		socket.send(data);	
 		
 		var jsonData = JSON.parse(data);//decodificar los datos en formato json
@@ -59,9 +60,17 @@ function procesarAtencion(){
 		var noTurno = document.getElementById('noTurno');//control input noTurno
 
 		turno.innerHTML = jsonData.turno;
-		noTurno.value = jsonData.turno;			
+		noTurno.value = jsonData.turno;
+		var nombre = jsonData.nombre;			
+		var cedula = jsonData.cedula;	
+		//var nombreArray = nombre.trim().split(' ');
+		//var primerNombre = nombreArray[0];
+		//const primerApellido = nombreArray[2] ? nombreArray[2][0] : (nombreArray[1] ? nombreArray[1][0] : '');
+		//var nombreFormateado = primerNombre+" "+primerApellido;
 			
 		var mensajes = document.getElementById('mensajes');
+		//div donde se mostrara la información del usuario a atender
+		var cliente_atender = document.getElementById('cliente_atender');
 
 		if(jsonData.status == 'error' || jsonData.status == 'mensaje'){			
 			
@@ -71,6 +80,10 @@ function procesarAtencion(){
 		}else{
 		
 			mensajes.innerHTML='';
+			//se inserta informacion del cliente
+			cliente_atender.innerHTML='Nombre: '+nombre+"<br/><br/>Cédula: "+cedula;
+			console.log(jsonData);
+
 		
 		}
 	

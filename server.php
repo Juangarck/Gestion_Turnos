@@ -91,6 +91,7 @@
 			$turno = '';//el id de la caja
 			$ocupado = '';//turno
 			$idCaja = '';//id de la caja
+			$nombre = '';//nombre del cliente
 
 
 			//loop through all connected sockets
@@ -111,6 +112,7 @@
 						$turno = $tst_msg -> turno;
 						$ocupado = $tst_msg -> ocupado;
 						$idCaja = $tst_msg -> idCaja;
+						$nombre = $tst_msg -> nombre;
 					
 					}
 
@@ -120,7 +122,8 @@
 						                                    'mensaje' => $mensaje, 
 						                                    'turno' => $turno, 
 						                                    'ocupado' => $ocupado, 
-						                                    'idCaja' => $idCaja
+						                                    'idCaja' => $idCaja,
+															'nombre'=>$nombre
 						                                   )));
 					
 					//enviar datos a los clientes

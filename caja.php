@@ -86,44 +86,8 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['password'])) {
 		<script src="js/sweetalert2.all.min.js"></script>
 		<script src="js/funcionesGenerales.js"></script>
 		<script src="js/websocket.js"></script>
-
 		<script src="js/caja.js"></script>
-		<script>
-			//se realiza un nuevo codigo para procesar los turnos por aprte de la caja
-
-			$('#atender').click(function () {
-				var ocupado = $('#ocupado').val();
-				var idCaja = $('#idCaja').val();
-				var turno = $('#noTurno').val();
-				//event.preventDefault();
-				console.log("id caja", idCaja, "turno", turno);
-
-				$.ajax({
-					url: 'consultas/caja_controller.php',
-					type: 'POST',
-					data: {
-
-						idCaja: idCaja,
-						turno: turno
-
-					},
-					dataType: 'json',
-					success: function (data) {
-						console.log(data);
-						var nombre = data.nombre;
-						var cedula = data.cedula;
-						if (nombre != '') {
-							var mensaje = "Nombre: " + nombre + "<Br/><Br/>Cédula: " + cedula;
-							$('#cliente_atender').html(mensaje);
-						}
-					}
-				});
-
-
-
-
-			});
-		</script>
+		
 
 	</body>
 
