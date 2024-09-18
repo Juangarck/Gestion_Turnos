@@ -76,6 +76,7 @@ function procesarAtencion(){
 		}else{
 		
 			mensajes.innerHTML='';
+			//se inserta informacion del cliente
 			cliente_atender.innerHTML='Nombre: '+nombre+"<br/><br/>Cédula: "+cedula;
 			console.log(jsonData);
 
