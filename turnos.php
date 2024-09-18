@@ -112,7 +112,7 @@
             <div class="contenido-izquierda">
                 <div class="contenedor-video">
                     <div class="contenedor-reproductor">
-                        <video id="video-geoportal" autoplay loop>
+                        <video id="video-geoportal" autoplay loop muted>
                             <source src="img/VID_20240516_ACC.mp4" type="video/mp4">
                         </video>
                     </div>
