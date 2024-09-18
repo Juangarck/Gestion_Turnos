@@ -97,7 +97,7 @@
                     <div class="columna-tablaTurnos">
                         <div class="columna-tablaTurnos c3">
                             <div class="tabla-turnosArriba">Usuario</div>
-                            <div class="tabla-turnosAbajo" id="verCaja"><?php echo $cliente; ?></div>
+                            <div class="tabla-turnosAbajo" id="verCliente"><?php echo $cliente; ?></div>
                         </div>
                     </div>
 
@@ -138,14 +138,15 @@
                             while ($row = mysqli_fetch_assoc($searchUT)) {
 
                                 //if($c > 0){
+                                    $nombreCompleto = ucwords(strtolower($row['nombre']));
+                                    $nombreArray = explode(' ', $nombreCompleto);
+                                    $primerNombre = $nombreArray[0];
+                                    $primerApellido = isset($nombreArray[2]) ? $nombreArray[2][0] : (isset($nombreArray[1]) ? $nombreArray[1][0] : '');
+                                    $nombreFormateado = $primerNombre . ' ' . $primerApellido;
                         
-                                $data .= $row['turno'] . '|' . $row['idCaja'] . '|' . $row['nombre'] . '|tr|';
+                                $data .= $row['turno'] . '|' . $row['idCaja'] . '|' . $nombreFormateado . '|tr|';
 
-                                $nombreCompleto = ucwords(strtolower($row['nombre']));
-                                $nombreArray = explode(' ', $nombreCompleto);
-                                $primerNombre = $nombreArray[0];
-                                $primerApellido = isset($nombreArray[2]) ? $nombreArray[2][0] : (isset($nombreArray[1]) ? $nombreArray[1][0] : '');
-                                $nombreFormateado = $primerNombre . ' ' . $primerApellido;
+                                
                                 echo "<tr>
                                         <td><span  class='primer-fila'>$row[turno]</span></td>
                                         

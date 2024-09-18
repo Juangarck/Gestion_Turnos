@@ -4,11 +4,11 @@ var imgStatus = null;
 
 var tono = null;
 
-function iniciarWebsocket(){
+function iniciarWebsocket() {
 
 	imgStatus = document.getElementById('imgStatus');
 
-	socket = new WebSocket("ws://192.168.43.234:8888/php/proyectos/turnero/turnero/server.php");
+	socket = new WebSocket("ws://192.168.0.12:8888/php/proyectos/turnero/turnero/server.php");
 
 	socket.addEventListener('open', abierto, false);
 	socket.addEventListener('message', recibido, false);
@@ -20,9 +20,9 @@ function iniciarWebsocket(){
 }
 
 //se activa cuando se conecta el cliente a el socket
-function abierto(){
+function abierto() {
 
-	if(imgStatus != null){
+	if (imgStatus != null) {
 
 		imgStatus.src = "img/conectado.png";
 
@@ -31,33 +31,41 @@ function abierto(){
 }
 
 //funcion que recibe los emnsajes del socket
-function recibido(e){
-
+function recibido(e) {
+	console.log(e.data);
 	var jsonData = JSON.parse(e.data);//decodificar el objeto json
 
 	var turno = document.getElementById('verTurno');
 	var caja = document.getElementById('verCaja');
+	var cliente = document.getElementById('verCliente');
 
 	//si turno Viene en 000 o undefined siginfica que no hay nuevos turnos
-	if(typeof jsonData.type === 'string' && jsonData.type === 'data'){
+	if (typeof jsonData.type === 'string' && jsonData.type === 'data') {
 
-		if(typeof jsonData.turno === 'string' && 
-		   typeof jsonData.idCaja === 'string'){
-		
-			if(turno != null && caja != null){
+		if (typeof jsonData.turno === 'string' &&
+			typeof jsonData.idCaja === 'string') {
 
-				if(jsonData != '' && jsonData.idCaja != '' && jsonData.status === 'success'){
+			if (turno != null && caja != null) {
+
+				if (jsonData != '' && jsonData.idCaja != '' && jsonData.status === 'success') {
+
+					var nombreArray = jsonData.nombre.trim().split(' ');
+					var primerNombre = nombreArray[0];
+					const primerApellido = nombreArray[2] ? nombreArray[2][0] : (nombreArray[1] ? nombreArray[1][0] : '');
+					var nombreFormateado = primerNombre + " " + primerApellido;
 
 					turno.innerHTML = jsonData.turno;
 					caja.innerHTML = jsonData.idCaja;
-		
-					mostrarTurnos(jsonData.turno, jsonData.idCaja);
+					cliente.innerHTML = nombreFormateado;
+					
+
+					mostrarTurnos(jsonData.turno, jsonData.idCaja, nombreFormateado);
 
 				}
-		
+
 			}
 
-		}else{
+		} else {
 
 			console.error('El tipo de dato de turno o caja no es valido');
 
@@ -67,25 +75,25 @@ function recibido(e){
 
 }
 
-function cerrado(){
+function cerrado() {
 
-	if(imgStatus != null){
+	if (imgStatus != null) {
 
-		imgStatus.src="img/desconectado.png";	
-	
+		imgStatus.src = "img/desconectado.png";
+
 	}
-	
+
 
 }
 
-function errores(){
+function errores() {
 
-	if(imgStatus != null){
-		
-		imgStatus.src="img/error.png";
-			
+	if (imgStatus != null) {
+
+		imgStatus.src = "img/error.png";
+
 	}
-	
+
 
 }
 
@@ -96,33 +104,36 @@ var turnsTable = [];
 let newArray = [];
 
 //mostrar los turnos que se atienden 
-function mostrarTurnos(noTurno = '', noCaja = ''){
+function mostrarTurnos(noTurno = '', noCaja = '', noNombre = '') {
 
 	let turn = [];//array que almacenara los turnos a mostrar
 
 	let displayedTurns = load_diplayed_turns();
 
 	//colocar el turno que se va a atender en el array
-	turn = {'turno':noTurno,
-	        'caja': noCaja};
+	turn = {
+		'turno': noTurno,
+		'caja': noCaja,
+		'nombre': noNombre
+	};
 
 
 	//verificar si ya se tienen turnos en pantalla cuando se carga el visualizador de turnos
 
-	if(displayedTurns.length > 0 && newArray.length === 0){
+	if (displayedTurns.length > 0 && newArray.length === 0) {
 
 		//si hay turnos en pantalla se entra aqui
 
-		for(let i = 0; i < displayedTurns.length; i++){
+		for (let i = 0; i < displayedTurns.length; i++) {
 
 			//generacion de array con los turnos en patalla
-			if(i === 0){
+			if (i === 0) {
 
-				newArray[i] = turn;			
+				newArray[i] = turn;
 
-			}else{
+			} else {
 
-				newArray[i] = displayedTurns[i-1];
+				newArray[i] = displayedTurns[i - 1];
 
 			}
 
@@ -130,13 +141,13 @@ function mostrarTurnos(noTurno = '', noCaja = ''){
 
 		generate_table(newArray);
 
-	}else{
+	} else {
 
 		//si no hay turnos en pantalla se entra aqui
 
 		newArray.unshift(turn);
 
-		if(newArray.length > 5){
+		if (newArray.length > 5) {
 
 			newArray.pop();
 
@@ -149,7 +160,7 @@ function mostrarTurnos(noTurno = '', noCaja = ''){
 }
 
 //cargar turnos que se ya se estan mostrando en pantalla
-function load_diplayed_turns(){
+function load_diplayed_turns() {
 
 	let turns = document.getElementById('turnos').value;
 
@@ -158,12 +169,15 @@ function load_diplayed_turns(){
 	let arrayTable = [];
 	let arrayTurn = []
 
-	for(let i = 0; i < turns.length - 1; i++){
+	for (let i = 0; i < turns.length - 1; i++) {
 
-			arrayTurn = turns[i].split('|');
+		arrayTurn = turns[i].split('|');
 
-			arrayTable[i] = {'turno':arrayTurn[0], 
-						     'caja':arrayTurn[1]};
+		arrayTable[i] = {
+			'turno': arrayTurn[0],
+			'caja': arrayTurn[1],
+			'nombre': arrayTurn[2]
+		};
 
 	}
 
@@ -172,35 +186,35 @@ function load_diplayed_turns(){
 }
 
 //generar la tabla con los turnos
-function generate_table(table = null){
+function generate_table(table = null) {
 
-	var th = "<tr><th>Turno</th><th colspan='2'>Ventanilla</th></tr>";
-	
-	for(var i = 0; i < table.length; i++){	
-	
-		if(i == 0){
-	
-			tr = "<tr><td><span  class='primer-fila'>"+table[i]['turno']+"</span></td><td class='td-caja'><span class='caja primer-fila'></span></td><td class='no-caja'><span  class='primer-fila'>"+table[i]['caja']+"</span></td></tr>".toString();
-	
-		}else{
-	
-			tr = tr+"<tr><td>"+table[i]['turno']+"</td><td class='td-caja'><span class='caja'></span></td><td class='no-caja'>"+table[i]['caja']+"</td></tr>".toString();
-	
+	var th = "<tr><th>Turno</th><th colspan='1'>Vent</th> <th colspan='1'>Usuario</th></tr>";
+
+	for (var i = 0; i < table.length; i++) {
+
+		if (i == 0) {
+
+			tr = "<tr><td><span  class='primer-fila'>" + table[i]['turno'] + "</span></td><td class='no-caja'><span  class='primer-fila'>" + table[i]['caja'] + "</span></td><td class='no-caja'><span  class='primer-fila'>" + table[i]['nombre'] + "</span></td></tr>".toString();
+
+		} else {
+
+			tr = tr + "<tr><td>" + table[i]['turno'] + "</td><td class='no-caja'>" + table[i]['caja'] + "</td>" + table[i]['caja'] + "</td><td>" + table[i]['nombre'] + "</td></tr>".toString();
+
 		}
-	
+
 	}
-	
+
 	display_table(th + tr);
 
 }
 
 //mostrar la tabla de turnos en pantalla
-function display_table(table = ''){
+function display_table(table = '') {
 
 	var tablaTurnos = document.getElementById('tabla-turnos');
-	
+
 	tablaTurnos.innerHTML = table;//imprimir los turnos que han pasado y el turno que esta siendo atendido 
-	
+
 	tono.play();
 
 }
