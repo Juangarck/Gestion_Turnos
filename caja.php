@@ -86,7 +86,6 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['password'])) {
 		<script src="js/sweetalert2.all.min.js"></script>
 		<script src="js/funcionesGenerales.js"></script>
 		<script src="js/websocket.js"></script>
-
 		<script src="js/caja.js"></script>
 		
 
