@@ -21,7 +21,15 @@
 					
             $resultado = mysqli_fetch_assoc($buscar);	
             $noResultados = mysqli_num_rows($buscar);
-            
+
+            // definimos los posibles tipos de tramites y su equivalencia
+            $tramites = [
+                "1" => "Productos catastrales",
+                "2" => "Trámites catastrales",
+                "3" => "Peticiones, quejas o reclamos",
+                "4" => "Consultas u orientación"
+            ];
+
             if($noResultados == 0){
 
                 $turno = "000";
@@ -50,6 +58,17 @@
                 <form id="formCedula" method="POST" autocomplete="off">
                     <label for="cedula">Ingrese su cédula de ciudadanía:</label>
                     <input type="text" id="cedula" name="cedula" required>
+                    
+                    <label for="tramite">Seleccione el tipo de trámite requerido</label>
+                    <select id="tramite" name="tramite"required>
+                        <option value="" disabled selected hidden>Seleccione el tipo de trámite</option> <!-- Opción inválida -->
+                        <?php
+                        foreach ($tramites as $clave => $nombre) {
+                            echo "<option value='$clave'>$nombre</option>";
+                        }
+                        ?>
+                    </select>
+                    
                     <button type="submit" id="verificar" class="btn">Verificar</button>
                 </form>
         </div>

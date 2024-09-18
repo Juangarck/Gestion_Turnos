@@ -36,56 +36,48 @@ if (isset($_POST['registrar'])) {
 			}
 
 			break;
+
 		case 'turno':
 			// Obtener el último turno
 			$error = "Error al obtener turno";
 			$sql = "SELECT turno FROM turnos ORDER BY id DESC LIMIT 1";
 			$resultado = consulta($con, $sql, $error);
 			$turno = "001";
-
+			
 			if ($resultado && mysqli_num_rows($resultado) > 0) {
 				$ultimoTurno = mysqli_fetch_assoc($resultado);
 				$turno = str_pad($ultimoTurno['turno'] + 1, 3, '0', STR_PAD_LEFT);
 			}
-
+			
 			$fecha = date("Y-m-d H:i:s");
-			// Asegurarse de recibir la cédula
-			if (isset($_POST['cedula'])) {
+			
+			// Asegurarse de recibir la cédula y el tipo de trámite
+			if (isset($_POST['cedula']) && isset($_POST['tramite'])) {
 				$cedula = $_POST['cedula'];
-
+				$tramite = $_POST['tramite'];  // Se recibe el número (1, 2, 3 o 4)
+			
 				// Buscar el cliente en la base de datos
 				$query = "SELECT id FROM clientes WHERE cedula = '$cedula'";
 				$resultado2 = mysqli_query($con, $query);
-
-				if (mysqli_num_rows($resultado2) > 0) {
-					// Si existe el cliente, obtener su id
+			
+				// Verificar si el cliente existe
+				if ($resultado2 && mysqli_num_rows($resultado2) > 0) {
+					// Si el cliente existe, obtener su id
 					$cliente = mysqli_fetch_assoc($resultado2);
 					$idCliente = $cliente['id'];
-
-					$query_turno = "INSERT INTO turnos (turno, idCliente, fechaRegistro) VALUES ('$turno', '$idCliente', NOW())";
+		
+					// Insertar el turno con el número de trámite
+					$query_turno = "INSERT INTO turnos (turno, idCliente, tramite, fechaRegistro) 
+									VALUES ('$turno', '$idCliente', '$tramite', NOW())";
 					mysqli_query($con, $query_turno);
-
+			
+					// Respuesta exitosa
 					$respuesta = array('status' => 'success', 'message' => 'Turno registrado exitosamente', 'turno' => $turno);
 				} else {
 					// Si el cliente no existe, redireccionar al registro
 					$respuesta = array('status' => 'error', 'message' => 'Cliente no encontrado, redireccionando a registro');
 				}
 			}
-			//parcialmente comentariado por erorres
-			/*				
-													if(consulta($con, $sql, $error)) {
-														// Llamada al script Python para imprimir el ticket
-														$nombre_esc = escapeshellarg($nombre);
-														$cedula_esc = escapeshellarg($cedula);
-														$turno_esc = escapeshellarg($turno);
-														//$comando = "python /imprimir.py $nombre_esc $cedula_esc $turno_esc";
-														shell_exec($comando);
-												
-														$respuesta = array('status' => 'correcto', 'mensaje' => 'Turno registrado', 'turno' => $turno);
-													} else {
-														$respuesta = array('status' => 'error', 'mensaje' => 'Error al registrar el turno', 'turno' => '000');
-													}
-														*/
 			break;
 
 

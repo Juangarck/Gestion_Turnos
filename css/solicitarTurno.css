@@ -78,3 +78,12 @@
 	background:#69ccd3;
 	cursor: pointer;
 }
+
+#tramite {
+    width: 100%; /* Ajustar el ancho al 100% del contenedor */
+    padding: 10px; /* Espaciado interno más amplio */
+    font-size: 14px; /* Aumentar el tamaño de la fuente */
+    margin: 10px 0; 
+    border-radius: 4px;
+    background-color: #f9f9f9; 
+}

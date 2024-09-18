@@ -120,6 +120,7 @@ CREATE TABLE `turnos` (
   `turno` varchar(5) COLLATE utf8_spanish2_ci NOT NULL,
   `atendido` int(11) NOT NULL,
   `idCliente` int(11) NOT NULL,
+  `tramite` VARCHAR(1),
   `fechaRegistro` datetime NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
