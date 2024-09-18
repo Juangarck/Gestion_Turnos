@@ -62,7 +62,7 @@ function procesarAtencion(){
 		turno.innerHTML = jsonData.turno;
 		noTurno.value = jsonData.turno;
 		var nombre = jsonData.nombre;			
-		//var cedula = jsonData.cedula;	
+		var cedula = jsonData.cedula;	
 		//var nombreArray = nombre.trim().split(' ');
 		//var primerNombre = nombreArray[0];
 		//const primerApellido = nombreArray[2] ? nombreArray[2][0] : (nombreArray[1] ? nombreArray[1][0] : '');
