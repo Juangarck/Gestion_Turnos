@@ -8,7 +8,7 @@ function iniciarWebsocket(){
 
 	imgStatus = document.getElementById('imgStatus');
 
-	socket = new WebSocket("ws://192.168.0.1:8888/php/proyectos/turnero/turnero/server.php");
+	socket = new WebSocket("ws://192.168.43.234:8888/php/proyectos/turnero/turnero/server.php");
 
 	socket.addEventListener('open', abierto, false);
 	socket.addEventListener('message', recibido, false);
@@ -174,7 +174,7 @@ function load_diplayed_turns(){
 //generar la tabla con los turnos
 function generate_table(table = null){
 
-	var th = "<tr><th>Turno</th><th colspan='1'>Caja</th></tr>";
+	var th = "<tr><th>Turno</th><th colspan='2'>Ventanilla</th></tr>";
 	
 	for(var i = 0; i < table.length; i++){	
 	
