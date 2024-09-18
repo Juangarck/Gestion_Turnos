@@ -152,7 +152,7 @@
                                         
                                         <td class='no-caja'><span  class='primer-fila'>$row[idCaja]</span></td>
                                         <td class='no-caja'><span  class='primer-fila'>$nombreFormateado</span></td>
-                                        </tr>";
+                                    </tr>";
 
                                 $c++;
 

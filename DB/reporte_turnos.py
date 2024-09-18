@@ -94,7 +94,32 @@ def obtener_indicadores_por_usuario(conn):
 
     return turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo
 
-def generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, tipo_reporte, rango_fechas=None):
+def obtener_tramites(conn):
+    cursor = conn.cursor()
+
+    query_tramites = """
+    SELECT tramite, COUNT(*) as cantidad
+    FROM turnos
+    WHERE DATE(fechaRegistro) = CURDATE()
+    GROUP BY tramite
+    """
+    cursor.execute(query_tramites)
+    tramites = cursor.fetchall()
+    
+    # Diccionario de equivalencias
+    tramites_dict = {
+        "1": "Productos catastrales",
+        "2": "Trámites catastrales",
+        "3": "Peticiones, quejas o reclamos",
+        "4": "Consultas u orientación"
+    }
+    
+    # Crear lista de tuplas con la descripción del trámite y la cantidad
+    tramites_con_descripcion = [(tramites_dict[str(tramite[0])], tramite[1]) for tramite in tramites]
+    
+    return tramites_con_descripcion
+
+def generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, tipo_reporte, tramites_con_descripcion, rango_fechas=None):
     reporte_nombre = f'reporte_turnos_{tipo_reporte}.xlsx'
     workbook = xlsxwriter.Workbook(reporte_nombre)
     worksheet = workbook.add_worksheet()
@@ -171,6 +196,18 @@ def generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, tot
     worksheet.write(row + 4, 0, 'Tiempo Promedio de Espera (min)')
     worksheet.write(row + 4, 1, total_clientes_tiempo[1])
 
+    # Agregar el conteo de trámites al final del reporte
+    row += 6
+    worksheet.write(row, 0, 'Conteo de trámites', formato_bold_centrado)
+    row += 1
+    worksheet.write(row, 0, 'Trámite')
+    worksheet.write(row, 1, 'Cantidad')
+
+    for tramite in tramites_con_descripcion:
+        row += 1
+        worksheet.write(row, 0, tramite[0])  # Descripción del trámite
+        worksheet.write(row, 1, tramite[1])  # Cantidad de turnos
+
     max_row = row + 4
     max_col = total_columnas - 1
     for r in range(2, max_row + 1):
@@ -231,11 +268,15 @@ def enviar_correo(reporte_path, tipo_reporte, rango_fechas=None):
     server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
     server.ehlo()
     server.login(from_address, password_account)
-    server.sendmail(from_address, to_address, msg.as_string())
-    server.quit()
 
-    # Eliminar el archivo después de enviarlo
-    os.remove(reporte_path)
+    # Enviar el correo
+    try:
+        server.sendmail(from_address, to_address, msg.as_string())
+        # Eliminar el archivo después de enviarlo
+        os.remove(reporte_path)
+    except Exception as e:
+        print(f"Error al enviar el correo: {e}")
+    server.quit()
     
 if __name__ == "__main__":
     conn = conectar_db()
@@ -243,7 +284,8 @@ if __name__ == "__main__":
         # Reporte diario
         if datetime.now().weekday() < 5:  # Lunes a viernes
             turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo = obtener_indicadores_por_usuario(conn)
-            reporte_path = generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, 'diario')
+            tramites_con_descripcion = obtener_tramites(conn)  # Obtener los trámites
+            reporte_path = generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, 'diario', tramites_con_descripcion)  # Pasar trámites como argumento
             enviar_correo(reporte_path, 'diario')
 
         # Reporte semanal
@@ -252,7 +294,8 @@ if __name__ == "__main__":
             fecha_fin_semana = datetime.now().strftime("%d-%m-%Y")
             rango_fechas = f'{fecha_inicio_semana} a {fecha_fin_semana}'
             turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo = obtener_indicadores_por_usuario(conn)
-            reporte_path = generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, 'semanal', rango_fechas)
+            tramites_con_descripcion = obtener_tramites(conn)  # Obtener los trámites
+            reporte_path = generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, 'semanal', tramites_con_descripcion, rango_fechas)  # Pasar trámites como argumento
             enviar_correo(reporte_path, 'semanal', rango_fechas)
 
         # Reporte mensual
@@ -262,7 +305,8 @@ if __name__ == "__main__":
             fecha_fin_mes = datetime.now().strftime("%d-%m-%Y")
             rango_fechas = f'{fecha_inicio_mes} a {fecha_fin_mes}'
             turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo = obtener_indicadores_por_usuario(conn)
-            reporte_path = generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, 'mensual', rango_fechas)
+            tramites_con_descripcion = obtener_tramites(conn)  # Obtener los trámites
+            reporte_path = generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, 'mensual', tramites_con_descripcion, rango_fechas)  # Pasar trámites como argumento
             enviar_correo(reporte_path, 'mensual', rango_fechas)
 
         conn.close()
