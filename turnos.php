@@ -1,4 +1,4 @@
-﻿<!doctype html>
+﻿﻿<!doctype html>
 <html>
 
 <head>
@@ -8,9 +8,9 @@
     <title>Turnos</title>
 
     <link rel="stylesheet" type="text/css" href="css/generales.css">
-    <link rel="stylesheet" type="text/css" href="css/turnos.css">
     <link rel="stylesheet" type="text/css" href="css/responsivo-turnos.css">
-    <link rel="stylesheet" type="text/css" href="css/sweetalert2.min.css">
+    <link rel="stylesheet" type="text/css" href="css/turnos.css">
+
 
 </head>
 
@@ -46,7 +46,7 @@
             $turno = mysqli_fetch_assoc($searchTA);
             $numeroTurno = $turno['turno'];
             $caja = $turno['idCaja'];
-            $nombreCompleto = $turno['nombre'];
+            $nombreCompleto = ucwords(strtolower($turno['nombre']));
             $nombreArray = explode(' ', $nombreCompleto);
             $primerNombre = $nombreArray[0];
             $primerApellido = isset($nombreArray[2]) ? $nombreArray[2][0] : (isset($nombreArray[1]) ? $nombreArray[1][0] : '');
@@ -125,7 +125,7 @@
                     <table class="tabla-turnos" id="tabla-turnos">
                         <tr>
                             <th>Turno</th>
-                            <th colspan="1">Caja</th>
+                            <th colspan="1">Vent</th>
                             <th colspan="1">Usuario</th>
                         </tr>
                         <?php
@@ -141,7 +141,7 @@
                         
                                 $data .= $row['turno'] . '|' . $row['idCaja'] . '|' . $row['nombre'] . '|tr|';
 
-                                $nombreCompleto = $row['nombre'];
+                                $nombreCompleto = ucwords(strtolower($row['nombre']));
                                 $nombreArray = explode(' ', $nombreCompleto);
                                 $primerNombre = $nombreArray[0];
                                 $primerApellido = isset($nombreArray[2]) ? $nombreArray[2][0] : (isset($nombreArray[1]) ? $nombreArray[1][0] : '');

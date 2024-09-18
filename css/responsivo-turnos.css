@@ -3,7 +3,7 @@
 /* CSS Document */
 @media (max-width:500px){
 	.tabla-turnos th, .tabla-turnos td {
-        font-size: 5vw;
+        font-size: 4vw;
         padding: 2vw;
 	}
 }	
