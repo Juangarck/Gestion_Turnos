@@ -33,18 +33,21 @@ $('#formCedula').submit(function(){
                         if(estado == "success"){
                             swal.fire({
                                 title: "Turno: "+data2.turno,
-                                html: "<b>Nombre:</b> "+data.nombre+"<br/> <b>Cédula:</b> "+data.cedula
-                                +"<br/> <strong>RECUERDA ACERCARTE CON TU CÉDULA </strong>",
+                                html: "<b>Nombre:</b> " + data.nombre + "<br/>" +
+                                "<b>Cédula:</b> " + data.cedula + "<br/>" +
+                                "<strong>RECUERDA ACERCARTE CON TU CÉDULA</strong><br/><br/>" +
+                                "<small><em>De acuerdo con la Ley 1581 de 2012, usted tiene derecho a solicitar la modificación o eliminación de sus datos personales. " +
+                                "Para ejercer este derecho, puede enviar un correo a <strong>atencionalciudadano@acc.gov.co</strong> con el asunto 'Modificación de datos personales digiturno'.</em></small>",
                                 icon: "info",
                                 showConfirmButton: false,
-                                timer: 10000
+                                timer: 15000
                               }); 
                               
                               
                               setTimeout(function() {
                                 location.reload();  
                                 // Recargar la página despues del tiempo de mostrar el mensaje para que se actualice el de turnos (esto se puede mejorar a futuro)
-                            }, 10000);
+                            }, 15000);
                         }else{
                             window.location.href = 'registro.php';
                         }

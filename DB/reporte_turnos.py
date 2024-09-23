@@ -321,14 +321,14 @@ if __name__ == "__main__":
     conn = conectar_db()
     if conn:
         # Reporte diario
-        if datetime.now().weekday() < 7:  # Lunes a viernes
+        if datetime.now().weekday() < 5:  # Lunes a viernes
             turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo = obtener_indicadores_por_usuario(conn, 'diario')
             tramites_con_descripcion = obtener_tramites(conn, 'diario')  # Obtener los trámites
             reporte_path = generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, 'diario', tramites_con_descripcion)  # Pasar trámites como argumento
             enviar_correo(reporte_path, 'diario')
 
         # Reporte semanal
-        if datetime.now().weekday() == 6:  # Viernes
+        if datetime.now().weekday() == 4:  # Viernes
             fecha_inicio_semana = (datetime.now() - timedelta(days=datetime.now().weekday())).strftime("%d-%m-%Y")
             fecha_fin_semana = datetime.now().strftime("%d-%m-%Y")
             rango_fechas = f'{fecha_inicio_semana} a {fecha_fin_semana}'

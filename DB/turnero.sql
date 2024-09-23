@@ -107,8 +107,10 @@ CREATE TABLE `clientes` (
     `cedula` VARCHAR(20) UNIQUE NOT NULL,
     `telefono` VARCHAR(20),
     `email` VARCHAR(100),
+    `municipio` VARCHAR(100),
     `direccion` TEXT,
-    `fechaRegistro` DATETIME NOT NULL
+    `fechaRegistro` DATETIME NOT NULL,
+    `autorizacion` BOOLEAN NOT NULL DEFAULT TRUE
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
 --
