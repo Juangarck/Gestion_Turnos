@@ -171,7 +171,7 @@ if (isset($_POST['registrar'])) {
 					}
 
 				} else {
-
+    				// No hay turnos disponibles, se vacían los datos del cliente
 					$status = "mensaje";
 					$mensaje = "No hay turnos disponibles";
 					$ocupado = false;

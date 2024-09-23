@@ -26,7 +26,7 @@ function detectarAccion(e){
 	
 		case'atender':	
 	
-			var ocupado1 = document.getElementById('ocupado').value;//se usa para saber si se esta atendiendo o no un turno
+			var ocupado = document.getElementById('ocupado').value;//se usa para saber si se esta atendiendo o no un turno
 			var idCaja = document.getElementById('idCaja').value;
 			var turno = document.getElementById('noTurno').value;
 	
@@ -44,49 +44,45 @@ function detectarAccion(e){
 
 }
 
-function procesarAtencion(){
+function procesarAtencion() {
 
-	if(conexion.readyState == 4){
+    if (conexion.readyState == 4) {
 
-		var data = conexion.responseText;
-		
-		//enviar los datos recibidos mediante ajax en formato json  al socket
-		console.log(data);
-		socket.send(data);	
-		
-		var jsonData = JSON.parse(data);//decodificar los datos en formato json
+        var data = conexion.responseText;
 
-		var turno = document.getElementById('turno');//turno que se muestra en la pantalla
-		var noTurno = document.getElementById('noTurno');//control input noTurno
+        // enviar los datos recibidos mediante ajax en formato json al socket
+        console.log(data);
+        socket.send(data);
 
-		turno.innerHTML = jsonData.turno;
-		noTurno.value = jsonData.turno;
-		var nombre = jsonData.nombre;			
-		var cedula = jsonData.cedula;	
-		//var nombreArray = nombre.trim().split(' ');
-		//var primerNombre = nombreArray[0];
-		//const primerApellido = nombreArray[2] ? nombreArray[2][0] : (nombreArray[1] ? nombreArray[1][0] : '');
-		//var nombreFormateado = primerNombre+" "+primerApellido;
-			
-		var mensajes = document.getElementById('mensajes');
-		//div donde se mostrara la información del usuario a atender
-		var cliente_atender = document.getElementById('cliente_atender');
+        var jsonData = JSON.parse(data); // decodificar los datos en formato json
 
-		if(jsonData.status == 'error' || jsonData.status == 'mensaje'){			
-			
-			//poner mensajes de error o de aviso
-			mensajes.innerHTML=jsonData.mensaje;
-		
-		}else{
-		
-			mensajes.innerHTML='';
-			//se inserta informacion del cliente
-			cliente_atender.innerHTML='Nombre: '+nombre+"<br/><br/>Cédula: "+cedula;
-			console.log(jsonData);
+        var turno = document.getElementById('turno'); // turno que se muestra en la pantalla
+        var noTurno = document.getElementById('noTurno'); // control input noTurno
+        var cliente_atender = document.getElementById('cliente_atender'); // div donde se mostrara la información del cliente a atender
+        var mensajes = document.getElementById('mensajes'); // div para los mensajes
 
-		
-		}
-	
-	}
+        if (jsonData.status == 'error' || jsonData.status == 'mensaje') {
+            // poner mensajes de error o de aviso
+            mensajes.innerHTML = jsonData.mensaje;
+
+            // limpiar la información del cliente y el turno
+            cliente_atender.innerHTML = 'Nombre: <br/><br/>Cédula: ';
+            turno.innerHTML = '';
+            noTurno.value = '';
+        } else {
+            mensajes.innerHTML = '';
+            
+            // Mostrar la información del cliente si no hay errores
+            var nombre = jsonData.nombre;
+            var cedula = jsonData.cedula;
+            
+            cliente_atender.innerHTML = 'Nombre: ' + nombre + "<br/><br/>Cédula: " + cedula;
+            turno.innerHTML = jsonData.turno;
+            noTurno.value = jsonData.turno;
+            
+            console.log(jsonData);
+        }
+
+    }
 
 }

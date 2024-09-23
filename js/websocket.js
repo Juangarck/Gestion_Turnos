@@ -112,9 +112,9 @@ function mostrarTurnos(noTurno = '', noCaja = '', noNombre = '') {
 
 	//colocar el turno que se va a atender en el array
 	turn = {
-		'turno': noTurno,
-		'caja': noCaja,
-		'nombre': noNombre
+        'turno': noTurno || 'N/A', // Inicializa con 'N/A' si no hay datos
+        'caja': noCaja || 'N/A',
+        'nombre': noNombre || 'N/A'
 	};
 
 
@@ -161,52 +161,57 @@ function mostrarTurnos(noTurno = '', noCaja = '', noNombre = '') {
 
 //cargar turnos que se ya se estan mostrando en pantalla
 function load_diplayed_turns() {
+    let turns = document.getElementById('turnos').value;
 
-	let turns = document.getElementById('turnos').value;
+    // Verificar si el valor de turnos es válido
+    if (!turns || turns === "") {
+        return []; // Retorna un array vacío si no hay turnos
+    }
 
-	turns = turns.split('|tr|');
+    turns = turns.split('|tr|');
 
-	let arrayTable = [];
-	let arrayTurn = []
+    let arrayTable = [];
+    let arrayTurn = [];
 
-	for (let i = 0; i < turns.length - 1; i++) {
+    // Evitar procesar si no hay turnos válidos
+    if (turns.length === 0) {
+        return []; // Retorna un array vacío si no hay turnos
+    }
 
-		arrayTurn = turns[i].split('|');
+    for (let i = 0; i < turns.length - 1; i++) {
+        arrayTurn = turns[i].split('|');
 
-		arrayTable[i] = {
-			'turno': arrayTurn[0],
-			'caja': arrayTurn[1],
-			'nombre': arrayTurn[2]
-		};
+        arrayTable[i] = {
+            'turno': arrayTurn[0] || '', // Inicializa con cadena vacía si no existe
+            'caja': arrayTurn[1] || '',
+            'nombre': arrayTurn[2] || ''
+        };
+    }
 
-	}
-
-	return arrayTable;
-
+    return arrayTable;
 }
+
 
 //generar la tabla con los turnos
 function generate_table(table = null) {
+    var th = "<tr><th>Turno</th><th colspan='1'>Vent</th><th colspan='1'>Usuario</th></tr>";
 
-	var th = "<tr><th>Turno</th><th colspan='1'>Vent</th> <th colspan='1'>Usuario</th></tr>";
+    if (table.length === 0) {
+        // Si no hay datos, mostrar un mensaje de 'No hay turnos'
+        tr = "<tr><td colspan='3'>No hay turnos pendientes</td></tr>";
+    } else {
+        for (var i = 0; i < table.length; i++) {
+            if (i == 0) {
+                tr = "<tr><td><span class='primer-fila'>" + table[i]['turno'] + "</span></td><td class='no-caja'><span class='primer-fila'>" + table[i]['caja'] + "</span></td><td class='no-caja'><span class='primer-fila'>" + table[i]['nombre'] + "</span></td></tr>";
+            } else {
+                tr = tr + "<tr><td>" + table[i]['turno'] + "</td><td class='no-caja'>" + table[i]['caja'] + "</td><td>" + table[i]['nombre'] + "</td></tr>";
+            }
+        }
+    }
 
-	for (var i = 0; i < table.length; i++) {
-
-		if (i == 0) {
-
-			tr = "<tr><td><span  class='primer-fila'>" + table[i]['turno'] + "</span></td><td class='no-caja'><span  class='primer-fila'>" + table[i]['caja'] + "</span></td><td class='no-caja'><span  class='primer-fila'>" + table[i]['nombre'] + "</span></td></tr>".toString();
-
-		} else {
-
-			tr = tr + "<tr><td>" + table[i]['turno'] + "</td><td class='no-caja'>" + table[i]['caja'] + "</td>" + table[i]['caja'] + "</td><td>" + table[i]['nombre'] + "</td></tr>".toString();
-
-		}
-
-	}
-
-	display_table(th + tr);
-
+    display_table(th + tr);
 }
+
 
 //mostrar la tabla de turnos en pantalla
 function display_table(table = '') {

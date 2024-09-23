@@ -149,7 +149,6 @@
                                 
                                 echo "<tr>
                                         <td><span  class='primer-fila'>$row[turno]</span></td>
-                                        
                                         <td class='no-caja'><span  class='primer-fila'>$row[idCaja]</span></td>
                                         <td class='no-caja'><span  class='primer-fila'>$nombreFormateado</span></td>
                                     </tr>";
