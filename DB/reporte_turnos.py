@@ -22,27 +22,52 @@ def conectar_db():
         print(f"Error al conectar a la base de datos: {e}")
         return None
 
-def obtener_indicadores_por_usuario(conn):
+# Función para obtener el rango de fechas
+def obtener_rango_fechas(tipo_reporte):
+    hoy = datetime.now()
+
+    if tipo_reporte == 'diario':
+        # Para diario solo usamos el día actual
+        fecha_inicio = fecha_fin = hoy.strftime("%Y-%m-%d")
+    elif tipo_reporte == 'semanal':
+        # Para semanal, obtener desde el lunes de esta semana hasta el viernes
+        inicio_semana = hoy - timedelta(days=hoy.weekday())  # lunes
+        fin_semana = inicio_semana + timedelta(days=4)  # viernes
+        fecha_inicio = inicio_semana.strftime("%Y-%m-%d")
+        fecha_fin = fin_semana.strftime("%Y-%m-%d")
+    elif tipo_reporte == 'mensual':
+        # Para mensual, obtener desde el primer día hasta el último día del mes
+        fecha_inicio = hoy.replace(day=1).strftime("%Y-%m-%d")
+        fecha_fin = (hoy.replace(month=hoy.month + 1, day=1) - timedelta(days=1)).strftime("%Y-%m-%d")
+    else:
+        raise ValueError("Tipo de reporte no válido")
+
+    return fecha_inicio, fecha_fin
+
+# Actualizar las consultas para filtrar por rango de fechas
+def obtener_indicadores_por_usuario(conn, tipo_reporte):
     cursor = conn.cursor()
     
-    # 1. Turnos atendidos por usuario por día
+    # Obtener el rango de fechas basado en el tipo de reporte
+    fecha_inicio, fecha_fin = obtener_rango_fechas(tipo_reporte)
+    
+    # 1. Turnos atendidos por usuario en el rango de fechas correspondiente
     query_turnos = """
     SELECT a.idCaja, u.usuario, DATE(fechaAtencion) as fecha, COUNT(*) as turnos_atendidos
     FROM atencion a
     JOIN usuarios u ON a.idCaja = u.idCaja
-    WHERE DATE(fechaAtencion) = CURDATE()
+    WHERE DATE(fechaAtencion) BETWEEN %s AND %s
     GROUP BY idCaja, DATE(fechaAtencion)
     """
-    cursor.execute(query_turnos)
+    cursor.execute(query_turnos, (fecha_inicio, fecha_fin))
     turnos = cursor.fetchall()
-    print("Turnos Atendidos:", turnos)  # Debugging output
-    
-    # 2. Tiempo promedio de espera de los clientes por día por cajera y global
+
+    # 2. Tiempo promedio de espera de los clientes en el rango de fechas
     query_tiempo = """
     (SELECT a.idCaja, AVG(TIMESTAMPDIFF(MINUTE, t.fechaRegistro, a.fechaAtencion)) as tiempo_promedio
     FROM atencion a
     JOIN turnos t ON a.turno = t.turno
-    WHERE DATE(a.fechaAtencion) = CURDATE()
+    WHERE DATE(a.fechaAtencion) BETWEEN %s AND %s
     GROUP BY a.idCaja)
 
     UNION ALL
@@ -50,60 +75,61 @@ def obtener_indicadores_por_usuario(conn):
     (SELECT 'GLOBAL' as idCaja, AVG(TIMESTAMPDIFF(MINUTE, t.fechaRegistro, a.fechaAtencion)) as tiempo_promedio
     FROM atencion a
     JOIN turnos t ON a.turno = t.turno
-    WHERE DATE(a.fechaAtencion) = CURDATE())
+    WHERE DATE(a.fechaAtencion) BETWEEN %s AND %s)
     """
-    cursor.execute(query_tiempo)
+    cursor.execute(query_tiempo, (fecha_inicio, fecha_fin, fecha_inicio, fecha_fin))
     tiempos = cursor.fetchall()
-    print("Tiempos Promedio:", tiempos)  # Debugging output
     
-    # 3. Hora con mayor atención de turnos
-    # 3.1. Hora de mayor atención de turnos por cajera
+    # 3. Hora de mayor atención de turnos por cajera en el rango de fechas
     query_hora_por_cajera = """
     SELECT a.idCaja, u.usuario, HOUR(a.fechaAtencion) as hora, COUNT(*) as turnos_atendidos
     FROM atencion a
     JOIN usuarios u ON a.idCaja = u.idCaja
-    WHERE DATE(a.fechaAtencion) = CURDATE()
+    WHERE DATE(a.fechaAtencion) BETWEEN %s AND %s
     GROUP BY a.idCaja, HOUR(a.fechaAtencion)
     ORDER BY a.idCaja, turnos_atendidos DESC
     """
-    cursor.execute(query_hora_por_cajera)
+    cursor.execute(query_hora_por_cajera, (fecha_inicio, fecha_fin))
     hora_pico_por_cajera = cursor.fetchall()
 
-    # 3.2. Hora de mayor atención a nivel global
+    # 4. Hora de mayor atención a nivel global en el rango de fechas
     query_hora_global = """
     SELECT HOUR(a.fechaAtencion) as hora, COUNT(*) as turnos_atendidos
     FROM atencion a
-    WHERE DATE(a.fechaAtencion) = CURDATE()
+    WHERE DATE(a.fechaAtencion) BETWEEN %s AND %s
     GROUP BY HOUR(a.fechaAtencion)
     ORDER BY turnos_atendidos DESC
     LIMIT 1
     """
-    cursor.execute(query_hora_global)
+    cursor.execute(query_hora_global, (fecha_inicio, fecha_fin))
     hora_pico_global = cursor.fetchone()
 
-    # 4. Cantidad total de clientes atendidos y tiempo promedio de espera por día
+    # 5. Cantidad total de clientes atendidos y tiempo promedio de espera en el rango de fechas
     query_total_clientes_y_tiempo = """
     SELECT COUNT(*) as total_clientes,
         AVG(TIMESTAMPDIFF(MINUTE, t.fechaRegistro, a.fechaAtencion)) as tiempo_promedio_espera
     FROM atencion a
     JOIN turnos t ON a.turno = t.turno
-    WHERE DATE(a.fechaAtencion) = CURDATE()
+    WHERE DATE(a.fechaAtencion) BETWEEN %s AND %s
     """
-    cursor.execute(query_total_clientes_y_tiempo)
+    cursor.execute(query_total_clientes_y_tiempo, (fecha_inicio, fecha_fin))
     total_clientes_tiempo = cursor.fetchone()
 
     return turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo
 
-def obtener_tramites(conn):
+def obtener_tramites(conn, tipo_reporte):
     cursor = conn.cursor()
+
+    # Obtener el rango de fechas basado en el tipo de reporte
+    fecha_inicio, fecha_fin = obtener_rango_fechas(tipo_reporte)
 
     query_tramites = """
     SELECT tramite, COUNT(*) as cantidad
     FROM turnos
-    WHERE DATE(fechaRegistro) = CURDATE()
+    WHERE DATE(fechaRegistro) BETWEEN %s AND %s
     GROUP BY tramite
     """
-    cursor.execute(query_tramites)
+    cursor.execute(query_tramites, (fecha_inicio, fecha_fin))
     tramites = cursor.fetchall()
     
     # Diccionario de equivalencias
@@ -120,6 +146,9 @@ def obtener_tramites(conn):
     return tramites_con_descripcion
 
 def generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, tipo_reporte, tramites_con_descripcion, rango_fechas=None):
+    fecha_inicio, fecha_fin = obtener_rango_fechas(tipo_reporte)
+    rango_fechas = f"{fecha_inicio} al {fecha_fin}" if tipo_reporte != 'diario' else None
+    
     reporte_nombre = f'reporte_turnos_{tipo_reporte}.xlsx'
     workbook = xlsxwriter.Workbook(reporte_nombre)
     worksheet = workbook.add_worksheet()
@@ -175,7 +204,10 @@ def generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, tot
     if tiempos:
         row = 3
         for tiempo in tiempos:
-            worksheet.write(row, 4, float(tiempo[1]))
+            if tiempo[1] is not None:
+                worksheet.write(row, 4, float(tiempo[1]))
+            else:
+                worksheet.write(row, 4, 'N/A')  # O el valor predeterminado que prefieras
             row += 1
 
     if hora_pico_por_cajera:
@@ -186,10 +218,17 @@ def generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, tot
             row += 1
 
     row += 2
-    worksheet.write(row, 0, 'Hora Pico Global')
-    worksheet.write(row, 1, hora_pico_global[0])
-    worksheet.write(row + 1, 0, 'Turnos en Hora Pico Global')
-    worksheet.write(row + 1, 1, hora_pico_global[1])
+    # En la parte de generar_reporte, antes de acceder a hora_pico_global[0] y hora_pico_global[1]
+    if hora_pico_global:
+        worksheet.write(row, 0, 'Hora Pico Global')
+        worksheet.write(row, 1, hora_pico_global[0])
+        worksheet.write(row + 1, 0, 'Turnos en Hora Pico Global')
+        worksheet.write(row + 1, 1, hora_pico_global[1])
+    else:
+        worksheet.write(row, 0, 'Hora Pico Global')
+        worksheet.write(row, 1, 'N/A')  # O algún valor por defecto
+        worksheet.write(row + 1, 0, 'Turnos en Hora Pico Global')
+        worksheet.write(row + 1, 1, 'N/A')  # O algún valor por defecto
 
     worksheet.write(row + 3, 0, 'Total Clientes Atendidos')
     worksheet.write(row + 3, 1, total_clientes_tiempo[0])
@@ -282,19 +321,19 @@ if __name__ == "__main__":
     conn = conectar_db()
     if conn:
         # Reporte diario
-        if datetime.now().weekday() < 5:  # Lunes a viernes
-            turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo = obtener_indicadores_por_usuario(conn)
-            tramites_con_descripcion = obtener_tramites(conn)  # Obtener los trámites
+        if datetime.now().weekday() < 7:  # Lunes a viernes
+            turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo = obtener_indicadores_por_usuario(conn, 'diario')
+            tramites_con_descripcion = obtener_tramites(conn, 'diario')  # Obtener los trámites
             reporte_path = generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, 'diario', tramites_con_descripcion)  # Pasar trámites como argumento
             enviar_correo(reporte_path, 'diario')
 
         # Reporte semanal
-        if datetime.now().weekday() == 4:  # Viernes
+        if datetime.now().weekday() == 6:  # Viernes
             fecha_inicio_semana = (datetime.now() - timedelta(days=datetime.now().weekday())).strftime("%d-%m-%Y")
             fecha_fin_semana = datetime.now().strftime("%d-%m-%Y")
             rango_fechas = f'{fecha_inicio_semana} a {fecha_fin_semana}'
-            turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo = obtener_indicadores_por_usuario(conn)
-            tramites_con_descripcion = obtener_tramites(conn)  # Obtener los trámites
+            turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo = obtener_indicadores_por_usuario(conn, 'semanal')
+            tramites_con_descripcion = obtener_tramites(conn, 'semanal')  # Obtener los trámites
             reporte_path = generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, 'semanal', tramites_con_descripcion, rango_fechas)  # Pasar trámites como argumento
             enviar_correo(reporte_path, 'semanal', rango_fechas)
 
@@ -304,8 +343,8 @@ if __name__ == "__main__":
             fecha_inicio_mes = datetime.now().replace(day=1).strftime("%d-%m-%Y")
             fecha_fin_mes = datetime.now().strftime("%d-%m-%Y")
             rango_fechas = f'{fecha_inicio_mes} a {fecha_fin_mes}'
-            turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo = obtener_indicadores_por_usuario(conn)
-            tramites_con_descripcion = obtener_tramites(conn)  # Obtener los trámites
+            turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo = obtener_indicadores_por_usuario(conn, 'mensual')
+            tramites_con_descripcion = obtener_tramites(conn, 'mensual')  # Obtener los trámites
             reporte_path = generar_reporte(turnos, tiempos, hora_pico_por_cajera, hora_pico_global, total_clientes_tiempo, 'mensual', tramites_con_descripcion, rango_fechas)  # Pasar trámites como argumento
             enviar_correo(reporte_path, 'mensual', rango_fechas)
 
