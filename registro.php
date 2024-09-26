@@ -48,6 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errores)) {
         $autorizacion = 1;
+        // Convertir el nombre a mayúsculas antes de guardarlo
+        $nombre = strtoupper($nombre);        
         $query = "INSERT INTO clientes (nombre, cedula, telefono, email, municipio, direccion, fechaRegistro, autorizacion) 
                   VALUES ('$nombre', '$cedula', '$telefono', '$email', '$municipio', '$direccion', '$fechaRegistro', '$autorizacion')";
         $result = consulta($con, $query, "Error al registrar el usuario.");
