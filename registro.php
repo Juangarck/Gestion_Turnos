@@ -3,13 +3,20 @@ include './funciones/conexion.php';
 include './funciones/funciones.php';
 date_default_timezone_set('America/Bogota');
 
+session_start(); // Iniciar sesión
+
 $errores = [];
 $exito = false; 
 
-$nombre = $cedula = $telefono = $email = $direccion = $municipio= '';
+$nombre = $cedula = $telefono = $email = $direccion = $municipio = '';
 
 // Precargar el símbolo @ en el correo electrónico
 $email = '@';
+
+// Si ya hay una cédula en la sesión, usarla para precargar el formulario
+if (isset($_SESSION['cedula'])) {
+    $cedula = $_SESSION['cedula'];
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = limpiar($con, trim($_POST['nombre']));
@@ -20,6 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $direccion = limpiar($con, trim($_POST['direccion']));
     $fechaRegistro = date('Y-m-d H:i:s');
     $autorizacion = isset($_POST['autorizacion']) ? $_POST['autorizacion'] : '';
+
+    // Guardar la cédula en la sesión para precargarla si hay errores
+    $_SESSION['cedula'] = $cedula;
 
     if (empty($nombre)) {
         $errores[] = "El nombre es obligatorio.";
@@ -61,6 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = consulta($con, $query, "Error al registrar el usuario.");
 
         if ($result) {
+            // Borrar la cédula de la sesión una vez el registro sea exitoso
+            unset($_SESSION['cedula']);
             $exito = true;
         } else {
             $errores[] = "Error al registrar el usuario. Por favor, intente nuevamente.";
@@ -75,12 +87,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Registro de Usuario</title>
     <link rel="stylesheet" href="css/styles_registro_clientes.css">
-    <style>
-        .required {
-            color: red;
-            font-weight: bold;
-        }
-    </style>
 </head>
 <body>
     <div class="container">

@@ -75,6 +75,11 @@ button:hover {
     padding-left: 0;
 }
 
+.required {
+    color: red;
+    font-weight: bold;
+}
+
 .autorizacion {
     margin-top: 15px;
     background-color: #eef;
@@ -88,6 +93,7 @@ button:hover {
 .autorizacion input {
     margin-right: 10px;
 }
+
 
 /* Responsive Design */
 @media (max-width: 768px) {
