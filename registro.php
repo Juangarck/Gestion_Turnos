@@ -8,6 +8,9 @@ $exito = false;
 
 $nombre = $cedula = $telefono = $email = $direccion = $municipio= '';
 
+// Precargar el símbolo @ en el correo electrónico
+$email = '@';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = limpiar($con, trim($_POST['nombre']));
     $cedula = limpiar($con, trim($_POST['cedula']));
@@ -38,7 +41,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errores[] = "El formato del teléfono es incorrecto.";
     }
 
-    if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    // Validar si el campo email contiene solo '@' o está vacío
+    if (trim($email) === '@') {
+        $email = '';  // Considerar como campo vacío
+    } elseif (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errores[] = "El formato del correo electrónico es inválido.";
     }
 
@@ -69,6 +75,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Registro de Usuario</title>
     <link rel="stylesheet" href="css/styles_registro_clientes.css">
+    <style>
+        .required {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -91,17 +103,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php else: ?>
             <form method="POST" action="registro.php" autocomplete="off">
-                <label for="nombre">Nombres y apellidos:</label>
+                <label for="nombre">Nombres y apellidos: <span class="required">*</span></label>
                 <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($nombre); ?>" required>
 
-                <label for="cedula">Cédula:</label>
+                <label for="cedula">Cédula: <span class="required">*</span></label>
                 <input type="text" id="cedula" name="cedula" value="<?php echo htmlspecialchars($cedula); ?>" required>
 
-                <label for="telefono">Celular:</label>
+                <label for="telefono">Celular: <span class="required">*</span></label>
                 <input type="text" id="telefono" name="telefono" value="<?php echo htmlspecialchars($telefono); ?>" required>
 
                 <label for="email">Correo Electrónico:</label>
-                <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>">
+                <!-- Cambiar el tipo a text -->
+                <input type="text" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" placeholder="usuario@dominio.com">
 
                 <label for="municipio">Municipio de Residencia:</label>
                 <input type="text" id="municipio" name="municipio" value="<?php echo htmlspecialchars($municipio); ?>">
@@ -112,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="autorizacion">
                     <label>
                         <input type="checkbox" name="autorizacion" value="1" required>
-                        Autorizo el tratamiento de mis datos personales de acuerdo con la Ley 1581 de 2012 y el Decreto 1377 de 2013. Los datos serán utilizados únicamente para los fines establecidos en la política de privacidad.
+                        Autorizo el tratamiento de mis datos personales de acuerdo con la Ley 1581 de 2012 y el Decreto 1377 de 2013. Los datos serán utilizados únicamente para los fines establecidos en la política de privacidad. <span class="required">*</span>
                     </label>
                 </div>
 
@@ -120,6 +133,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
         <?php endif; ?>
     </div>
+
+    <script>
+    document.querySelector('form').addEventListener('submit', function(event) {
+        var emailField = document.getElementById('email');
+        var emailValue = emailField.value.trim();
+
+        // Validar el campo de correo electrónico
+        if (emailValue === '@') {
+            emailField.value = ''; // Limpiar el campo si solo contiene '@'
+        } else if (emailValue !== '' && !/^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$/.test(emailValue)) {
+            event.preventDefault(); // Detener el envío del formulario
+            alert('Por favor, introduce una dirección de correo válida o deja el campo vacío.');
+        }
+    });
+    </script>
 </body>
 </html>
 
