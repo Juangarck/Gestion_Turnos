@@ -52,7 +52,7 @@ function recibido(e) {
 					var nombreArray = jsonData.nombre.trim().split(' ');
 					var primerNombre = nombreArray[0];
 					const primerApellido = nombreArray[2] ? nombreArray[2][0] : (nombreArray[1] ? nombreArray[1][0] : '');
-					var nombreFormateado = primerNombre + " " + primerApellido;
+					var nombreFormateado = (primerNombre + " " + primerApellido).toUpperCase();
 
 					turno.innerHTML = jsonData.turno;
 					caja.innerHTML = jsonData.idCaja;
@@ -114,7 +114,7 @@ function mostrarTurnos(noTurno = '', noCaja = '', noNombre = '') {
 	turn = {
         'turno': noTurno || 'N/A', // Inicializa con 'N/A' si no hay datos
         'caja': noCaja || 'N/A',
-        'nombre': noNombre || 'N/A'
+        'nombre': (noNombre || 'N/A').toUpperCase()
 	};
 
 
@@ -204,7 +204,7 @@ function generate_table(table = null) {
             if (i == 0) {
                 tr = "<tr><td><span class='primer-fila'>" + table[i]['turno'] + "</span></td><td class='no-caja'><span class='primer-fila'>" + table[i]['caja'] + "</span></td><td class='no-caja'><span class='primer-fila'>" + table[i]['nombre'] + "</span></td></tr>";
             } else {
-                tr = tr + "<tr><td>" + table[i]['turno'] + "</td><td class='no-caja'>" + table[i]['caja'] + "</td><td>" + table[i]['nombre'] + "</td></tr>";
+                tr = tr + "<tr><td>" + table[i]['turno'] + "</td><td class='no-caja'>" + table[i]['caja'] + "</td><td>" + table[i]['nombre'].toUpperCase() + "</td></tr>";
             }
         }
     }

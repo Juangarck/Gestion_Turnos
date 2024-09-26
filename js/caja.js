@@ -73,7 +73,7 @@ function procesarAtencion() {
             mensajes.innerHTML = '';
             
             // Mostrar la información del cliente si no hay errores
-            var nombre = jsonData.nombre;
+            var nombre = jsonData.nombre.toUpperCase();
             var cedula = jsonData.cedula;
             
             cliente_atender.innerHTML = 'Nombre: ' + nombre + "<br/><br/>Cédula: " + cedula;
