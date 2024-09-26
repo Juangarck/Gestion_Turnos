@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a href="solicitar_turno.php">Volver a la página principal</a>
             </div>
         <?php else: ?>
-            <form method="POST" action="registro.php" autocomplete="off">
+            <form id="registroForm" method="POST" action="registro.php" autocomplete="off">
                 <label for="nombre">Nombres y apellidos: <span class="required">*</span></label>
                 <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($nombre); ?>" required>
 
@@ -140,20 +140,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
     </div>
 
-    <script>
-    document.querySelector('form').addEventListener('submit', function(event) {
-        var emailField = document.getElementById('email');
-        var emailValue = emailField.value.trim();
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('registroForm'); // Seleccionar por ID
+    if (form) {
+        form.addEventListener('submit', function(event) {
+            var emailField = document.getElementById('email');
+            var emailValue = emailField.value.trim();
 
-        // Validar el campo de correo electrónico
-        if (emailValue === '@') {
-            emailField.value = ''; // Limpiar el campo si solo contiene '@'
-        } else if (emailValue !== '' && !/^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$/.test(emailValue)) {
-            event.preventDefault(); // Detener el envío del formulario
-            alert('Por favor, introduce una dirección de correo válida o deja el campo vacío.');
-        }
-    });
-    </script>
+            // Validar el campo de correo electrónico
+            if (emailValue === '@') {
+                emailField.value = ''; // Limpiar el campo si solo contiene '@'
+            } else if (emailValue !== '' && !/^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$/.test(emailValue)) {
+                event.preventDefault(); // Detener el envío del formulario
+                alert('Por favor, introduce una dirección de correo válida ej: usuario@dominio.com o deja el campo vacío.');
+            }
+        });
+    } else {
+        console.error('No se encontró el formulario');
+    }
+});
+</script>
+
 </body>
 </html>
 

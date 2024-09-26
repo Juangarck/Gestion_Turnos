@@ -17,17 +17,17 @@
 
         	<div class="contenedor-menu">
 
-            	<h1 class="titulo-seccion">Controlador de turnos</h1>
+            	<h1 class="titulo-seccion">Controlador de Digiturnos</h1>
 
             	<ul class="menu-ul">
 
                 	<li class="menu-li"><a href="turnos.php">Visualizador de turnos</a></li>
                     <li class="menu-li"><a href="solicitar_turno.php">Solicitar turno</a></li>
-                    <li class="menu-li"><a href="login.php">Login cajeros</a></li>
-                    <li class="menu-li"><a href="registrar_usuarios.php">Registrar usuario</a></li>
-                    <li class="menu-li"><a href="registrar_cajas.php">Registrar caja</a></li>
+                    <li class="menu-li"><a href="login.php">Login Ventanilla</a></li>
+                    <li class="menu-li"><a href="registrar_usuarios.php">Registrar Funcionario</a></li>
+                    <li class="menu-li"><a href="registrar_cajas.php">Registrar Ventanilla</a></li>
                     <li class="menu-li"><a href="info_empresa.php">Informacion de la Agencia</a></li>
-                    <li class="menu-li"><a href="#" id="reset">Resetear turnos</a></li>
+                    <!--<li class="menu-li"><a href="#" id="reset">Resetear turnos</a></li>-->
 
                 </ul>
 

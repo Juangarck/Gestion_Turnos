@@ -82,15 +82,27 @@ def obtener_indicadores_por_usuario(conn, tipo_reporte):
     
     # 3. Hora de mayor atención de turnos por cajera en el rango de fechas
     query_hora_por_cajera = """
-    SELECT a.idCaja, u.usuario, HOUR(a.fechaAtencion) as hora, COUNT(*) as turnos_atendidos
-    FROM atencion a
-    JOIN usuarios u ON a.idCaja = u.idCaja
-    WHERE DATE(a.fechaAtencion) BETWEEN %s AND %s
-    GROUP BY a.idCaja, HOUR(a.fechaAtencion)
-    ORDER BY a.idCaja, turnos_atendidos DESC
+        SELECT a.idCaja, u.usuario, HOUR(a.fechaAtencion) AS hora, COUNT(*) AS turnos_atendidos
+        FROM atencion a
+        JOIN usuarios u ON a.idCaja = u.idCaja
+        WHERE DATE(a.fechaAtencion) BETWEEN %s AND %s
+        GROUP BY a.idCaja, u.usuario, HOUR(a.fechaAtencion)
+        HAVING turnos_atendidos = (
+            SELECT MAX(turnos_atendidos)
+            FROM (
+                SELECT a2.idCaja, HOUR(a2.fechaAtencion) AS hora, COUNT(*) AS turnos_atendidos
+                FROM atencion a2
+                WHERE DATE(a2.fechaAtencion) BETWEEN %s AND %s
+                GROUP BY a2.idCaja, HOUR(a2.fechaAtencion)
+            ) AS max_turnos
+            WHERE max_turnos.idCaja = a.idCaja
+        )
+        ORDER BY a.idCaja;
     """
-    cursor.execute(query_hora_por_cajera, (fecha_inicio, fecha_fin))
+
+    cursor.execute(query_hora_por_cajera, (fecha_inicio, fecha_fin, fecha_inicio, fecha_fin))
     hora_pico_por_cajera = cursor.fetchall()
+
 
     # 4. Hora de mayor atención a nivel global en el rango de fechas
     query_hora_global = """
