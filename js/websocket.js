@@ -16,7 +16,6 @@ function iniciarWebsocket() {
 	socket.addEventListener('error', errores, false);
 
 	tono = document.getElementById('tono');
-
 }
 
 //se activa cuando se conecta el cliente a el socket
@@ -27,7 +26,6 @@ function abierto() {
 		imgStatus.src = "img/conectado.png";
 
 	}
-
 }
 
 //funcion que recibe los emnsajes del socket
@@ -215,11 +213,37 @@ function generate_table(table = null) {
 
 //mostrar la tabla de turnos en pantalla
 function display_table(table = '') {
+    var tablaTurnos = document.getElementById('tabla-turnos');
 
-	var tablaTurnos = document.getElementById('tabla-turnos');
+    tablaTurnos.innerHTML = table;  // Imprimir los turnos que han pasado y el turno que está siendo atendido
 
-	tablaTurnos.innerHTML = table;//imprimir los turnos que han pasado y el turno que esta siendo atendido 
+    tono.play();  // Reproducir el sonido de notificación
 
-	tono.play();
+    // Esperar 500ms antes de enviar los datos al archivo PHP para ejecutar la llamada por voz
+    setTimeout(function() {
+        // Obtener los datos del turno actual desde el primer elemento de la tabla
+        if (newArray.length > 0) {
+            var turnoActual = newArray[0];
 
+            // Enviar una solicitud POST al archivo PHP con los datos del turno
+            fetch('../llamar_turno.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `turno=${turnoActual.turno}&ventanilla=${turnoActual.caja}&cliente=${turnoActual.nombre}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    console.log("Llamado de turno exitoso:", data.message);
+                } else {
+                    console.error("Error llamando turno:", data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error en la solicitud:", error);
+            });
+        }
+    }, 500);  // Retraso de medio segundo (500 ms)
 }

@@ -94,16 +94,49 @@ button:hover {
     margin-right: 10px;
 }
 
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .container {
-        width: 90%; /* En pantallas más pequeñas, usa 90% del ancho */
-    }
+/* Estilos para el mensaje de error */
+.error-message {
+    background-color: #ffe6e6;
+    border-left: 6px solid #ff4d4d;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    text-align: center;
+    color: #cc0000;
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    width: 100%;  /* Que ocupe todo el ancho disponible */
+    font-size: 1.2em;  /* Aumentar el tamaño de fuente */
 }
 
-@media (max-width: 480px) {
-    .container {
-        width: 100%; /* En pantallas móviles, ocupa el 100% del ancho */
-    }
+/* Estilo del título */
+.error-message h2 {
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: #ff3333;
+}
+
+/* Estilo del párrafo */
+.error-message p {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+/* Botón de solicitud */
+.button-error {
+    background-color: #ff3333;
+    color: white;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+    display: inline-block;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease;
+}
+
+/* Efecto hover en el botón */
+.button-error:hover {
+    background-color: #cc0000;
+    text-decoration: underline;
 }

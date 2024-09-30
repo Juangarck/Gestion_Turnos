@@ -66,9 +66,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $autorizacion = 1;
         // Convertir el nombre a mayúsculas antes de guardarlo
         $nombre = strtoupper($nombre);        
-        $query = "INSERT INTO clientes (nombre, cedula, telefono, email, municipio, direccion, fechaRegistro, autorizacion) 
-                  VALUES ('$nombre', '$cedula', '$telefono', '$email', '$municipio', '$direccion', '$fechaRegistro', '$autorizacion')";
-        $result = consulta($con, $query, "Error al registrar el usuario.");
+
+        // Comprobar si la cédula ya existe en la base de datos
+        $query_check = "SELECT * FROM clientes WHERE cedula = '$cedula'";
+        $result_check = consulta($con, $query_check, "Error al verificar la cédula.");
+
+        if ($result_check && mysqli_num_rows($result_check) > 0) {
+            // Cédula ya existe, mostrar mensaje y redireccionar
+            echo "<div class='error-message'>
+                    <h2>Error: Cédula ya registrada</h2>
+                    <p>La cédula <strong>$cedula</strong> ya está registrada. Por favor, solicite su turno nuevamente o verifique sus datos.</p>
+                    <a href='solicitar_turno.php' class='button-error'>Solicitar Turno</a>
+                  </div>
+                  
+                  <script>
+                    // Redireccionar automáticamente después de 10 segundos
+                    setTimeout(function(){
+                      window.location.href = 'solicitar_turno.php';
+                    }, 10000);
+                  </script>";
+            exit; // Salir para evitar que continúe la ejecución del script
+        }    
+
+        // Si la cédula no existe, insertar el nuevo registro
+        $query_insert = "INSERT INTO clientes (nombre, cedula, telefono, email, municipio, direccion, fechaRegistro, autorizacion) 
+                         VALUES ('$nombre', '$cedula', '$telefono', '$email', '$municipio', '$direccion', '$fechaRegistro', '$autorizacion')";
+        $result = consulta($con, $query_insert, "Error al registrar el usuario.");
 
         if ($result) {
             // Borrar la cédula de la sesión una vez el registro sea exitoso
@@ -76,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $exito = true;
         } else {
             $errores[] = "Error al registrar el usuario. Por favor, intente nuevamente.";
-        }
+        }        
     }
 }
 ?>
@@ -119,7 +142,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="text" id="telefono" name="telefono" value="<?php echo htmlspecialchars($telefono); ?>" required>
 
                 <label for="email">Correo Electrónico:</label>
-                <!-- Cambiar el tipo a text -->
                 <input type="text" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" placeholder="usuario@dominio.com">
 
                 <label for="municipio">Municipio de Residencia:</label>
@@ -142,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    var form = document.getElementById('registroForm'); // Seleccionar por ID
+    var form = document.getElementById('registroForm');
     if (form) {
         form.addEventListener('submit', function(event) {
             var emailField = document.getElementById('email');
@@ -164,4 +186,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
+
 
