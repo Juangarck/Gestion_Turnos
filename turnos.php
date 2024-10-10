@@ -41,7 +41,7 @@
         $errorTA = "Error al cargar el turno atendido";
         $searchTA = consulta($con, $sqlTA, $errorTA);
 
-        if (mysqli_num_rows($searchTA) > 1) {
+        if (mysqli_num_rows($searchTA) > 0) {
 
             $turno = mysqli_fetch_assoc($searchTA);
             $numeroTurno = $turno['turno'];
@@ -58,6 +58,25 @@
             $numeroTurno = '000';
             $caja = '0';
 
+        }
+
+        // Enviar los datos por POST para generar el audio
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $num_turno = isset($_POST['numeroTurno']) ? htmlspecialchars($_POST['numeroTurno']) : $numeroTurno;
+            $num_ventanilla = isset($_POST['caja']) ? htmlspecialchars($_POST['caja']) : $caja;
+            $nom_cliente = isset($_POST['nombreCompleto']) ? htmlspecialchars($_POST['nombreCompleto']) : $nombreCompleto;
+
+            // Ejecutar el script de Python para la generación de audio
+            $command = escapeshellcmd("py llamado_voz.py $num_turno $num_ventanilla $nom_cliente");
+            #$command = escapeshellcmd("py llamado_voz.py 25 5 'Juan Facherito'");
+            $output = shell_exec($command);
+            echo $output;
+
+            // Devolver respuesta al cliente
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Audio generado correctamente'
+            ]);
         }
 
 
@@ -100,11 +119,8 @@
                             <div class="tabla-turnosAbajo" id="verCliente"><?php echo $cliente; ?></div>
                         </div>
                     </div>
-
-                </div>
-
+                </div>                
             </div>
-
         </header>
 
         <section class="contenido">

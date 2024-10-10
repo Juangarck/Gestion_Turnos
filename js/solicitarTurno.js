@@ -43,7 +43,6 @@ $('#formCedula').submit(function(){
                                 timer: 15000
                               }); 
                               
-                              
                               setTimeout(function() {
                                 location.reload();  
                                 // Recargar la página despues del tiempo de mostrar el mensaje para que se actualice el de turnos (esto se puede mejorar a futuro)
@@ -51,15 +50,14 @@ $('#formCedula').submit(function(){
                         }else{
                             window.location.href = 'registro.php';
                         }
-                        
-                        
+
                     },
                     error: function(xhr, status, error) {
                         console.error("Error en la solicitud de registrar el turno:", error);
                     }
+                    
                 }); 
             }
         }
-    })
-    
+    }) 
 });

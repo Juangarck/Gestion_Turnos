@@ -221,29 +221,37 @@ function display_table(table = '') {
 
     // Esperar 500ms antes de enviar los datos al archivo PHP para ejecutar la llamada por voz
     setTimeout(function() {
-        // Obtener los datos del turno actual desde el primer elemento de la tabla
         if (newArray.length > 0) {
             var turnoActual = newArray[0];
-
-            // Enviar una solicitud POST al archivo PHP con los datos del turno
-            fetch('../llamar_turno.php', {
+            console.log(`Enviando datos para audio: turno: ${turnoActual.turno}, caja: ${turnoActual.caja}, cliente: ${turnoActual.nombre}`);
+            // Enviar solicitud POST al archivo PHP para generar el audio
+            fetch('./turnos.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
-                body: `turno=${turnoActual.turno}&ventanilla=${turnoActual.caja}&cliente=${turnoActual.nombre}`
+                body: `numeroTurno=${turnoActual.turno}&caja=${turnoActual.caja}&cliente=${turnoActual.nombre}`
             })
             .then(response => response.json())
             .then(data => {
                 if (data.status === "success") {
-                    console.log("Llamado de turno exitoso:", data.message);
+                    console.log("Audio generado exitosamente:", data.message);
+    
+                    // Reproducir el archivo de audio generado
+                    var audio = new Audio(`../tonos/turno_${turnoActual.turno}.ogg`);
+                    audio.play();
+    
+
                 } else {
-                    console.error("Error llamando turno:", data.message);
+                    console.error("Error generando audio:", data.message);
                 }
             })
             .catch(error => {
                 console.error("Error en la solicitud:", error);
             });
         }
-    }, 500);  // Retraso de medio segundo (500 ms)
+        else {
+            console.error("No hay turnos disponibles en newArray");
+        }
+    }, 500);
 }

@@ -15,7 +15,7 @@
             date_default_timezone_set('America/Bogota');
             
             // Obtener el último turno
-            $sql = "SELECT turno FROM turnos ORDER BY id DESC LIMIT 1";
+            $sql = "SELECT turno, idCliente FROM turnos ORDER BY id DESC LIMIT 1";
             $error = "Error al seleccionar el turno";
             $buscar = consulta($con,$sql,$error);
 					
@@ -33,10 +33,12 @@
             if($noResultados == 0){
 
                 $turno = "000";
+                $idCliente ="0";
 
             }else{
 
                 $turno = $resultado['turno'];
+                $idCliente = $resultado['idCliente'];
 
             }
             
