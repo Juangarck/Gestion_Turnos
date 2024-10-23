@@ -12,14 +12,12 @@ function conectarViaGet(funcion = '', fichero = ''){
 
 function conectarViaPost(funcion = '', 
 	                     fichero = '', 
-	                     datos = ''){
-
+	                     datos = ''){																		
 	conexion=ajax();
 	conexion.onreadystatechange=funcion;
 	conexion.open('POST',fichero,true);
 	conexion.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
 	conexion.send(datos);
-
 }
 
 function cerrarForm(e){
@@ -29,7 +27,7 @@ function cerrarForm(e){
 	var elemento='';
 	
 	if(e){
-	
+		
 		e.preventDefault();
 		elemento = e.target;
 		id = e.target.id;
@@ -91,7 +89,6 @@ function agregarEvento(elemento = '',
 }
 
 function ajax(){
-
 	if(window.XMLHttpRequest){
 	
 		xmlHttp=new XMLHttpRequest();

@@ -37,7 +37,7 @@
         $sqlTA = "select a.turno, a.idCaja, c.nombre from atencion a 
                  inner join turnos t on t.id = a.idTurno
                 inner join clientes c on t.idCliente = c.id
-                order by turno desc";
+                order by t.id desc";
         $errorTA = "Error al cargar el turno atendido";
         $searchTA = consulta($con, $sqlTA, $errorTA);
 
@@ -67,10 +67,13 @@
             $nom_cliente = isset($_POST['nombreCompleto']) ? htmlspecialchars($_POST['nombreCompleto']) : $nombreCompleto;
 
             // Ejecutar el script de Python para la generación de audio
-            $command = escapeshellcmd("py llamado_voz.py $num_turno $num_ventanilla $nom_cliente");
-            #$command = escapeshellcmd("py llamado_voz.py 25 5 'Juan Facherito'");
+            $command = escapeshellcmd("py llamado_voz.py $num_turno $num_ventanilla '$nom_cliente'");
+            #$command = escapeshellcmd("py llamado_voz.py 25 5 'Juan F'");
             $output = shell_exec($command);
             echo $output;
+
+            // El archivo de audio generado se llamará turno_$num_turno.ogg
+            $audio_file = "tonos/turno_" . $num_turno . ".ogg"; // ruta del archivo generado
 
             // Devolver respuesta al cliente
             echo json_encode([
@@ -83,7 +86,7 @@
         //ultimos 5 turnos atendidos
         $sqlUT = "select a.id, a.turno, a.idCaja, c.nombre from atencion a
                 inner join turnos t on t.id = a.idTurno
-                inner join clientes c on t.idCliente = c.id order by turno desc limit 5";
+                inner join clientes c on t.idCliente = c.id order by t.id desc limit 5";
         $errorUT = "Error al cargar los ultimos 5 turnos atendidos";
         $searchUT = consulta($con, $sqlUT, $errorUT);
 
@@ -199,7 +202,7 @@
     </div><!--contenedor principal-->
 
     <audio src="tonos/hangouts_message.ogg" id="tono"></audio>
-
+    <audio src="tonos/hangouts_message.ogg" id="audio"></audio>
     <script src="js/funcionesGenerales.js"></script>
     <script src="js/websocket.js"></script>
 

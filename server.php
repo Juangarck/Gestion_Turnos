@@ -16,7 +16,7 @@
 
 	date_default_timezone_set('America/Bogota');
 
-	  	//Create TCP/IP sream socket
+	//Create TCP/IP sream socket
 	if (($socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP)) === false) {
 	 
 	    echo "socket_create() falló: razón: " . socket_strerror(socket_last_error()) . "\n";

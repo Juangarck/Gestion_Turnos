@@ -2,7 +2,8 @@ agregarEvento(window, 'load', iniciarWebsocket, false);
 
 var imgStatus = null;
 
-var tono = null;
+let tono = null;
+let audio = null; 
 
 function iniciarWebsocket() {
 
@@ -232,19 +233,13 @@ function display_table(table = '') {
                 },
                 body: `numeroTurno=${turnoActual.turno}&caja=${turnoActual.caja}&cliente=${turnoActual.nombre}`
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === "success") {
-                    console.log("Audio generado exitosamente:", data.message);
-    
-                    // Reproducir el archivo de audio generado
-                    var audio = new Audio(`../tonos/turno_${turnoActual.turno}.ogg`);
-                    audio.play();
-    
-
-                } else {
-                    console.error("Error generando audio:", data.message);
-                }
+            .then(response => { 
+        
+                // Reproducir el archivo de audio generado
+                let audio = document.getElementById("audio");
+                audio.src = `./tonos/turno_${turnoActual.turno}.ogg`;
+                audio.play();
+ 
             })
             .catch(error => {
                 console.error("Error en la solicitud:", error);
@@ -253,5 +248,5 @@ function display_table(table = '') {
         else {
             console.error("No hay turnos disponibles en newArray");
         }
-    }, 500);
+    }, 10);
 }
