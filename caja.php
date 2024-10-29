@@ -33,6 +33,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['password'])) {
 				<?php
 
 				$idCaja = $_SESSION['idCaja'];
+				$usuario = $_SESSION['usuario'];
 
 				//seleccionar los turnos en la tabla atencion que correspondan a la caja y que estan en o en la columna atendido
 				$sqlTurnosAtencion = "select id,turno from atencion where atendido='0' and idCaja='$idCaja'";
@@ -53,7 +54,7 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['password'])) {
 				}
 
 				//Seleccionar el ID del funcionario
-				$sqlIdFuncionario = "select id from usuarios where  idCaja='$idCaja'";
+				$sqlIdFuncionario = "select id from usuarios where  usuario='$usuario'";
 				$errorFuncionario = "Error al seleccionar el ID del funcionario ";
 				$buscarUsuarioID = consulta($con, $sqlIdFuncionario, $errorFuncionario);
 				

@@ -51,28 +51,28 @@ def obtener_indicadores_por_usuario(conn, tipo_reporte):
     # Obtener el rango de fechas basado en el tipo de reporte
     fecha_inicio, fecha_fin = obtener_rango_fechas(tipo_reporte)
     
-    # 1. Turnos atendidos por usuario en el rango de fechas correspondiente
+    # 1. Turnos atendidos por FUNCIONARIO en el rango de fechas correspondiente DIA / SEMANA / MES
     query_turnos = """
-    SELECT a.idCaja, u.usuario, DATE(fechaAtencion) as fecha, COUNT(*) as turnos_atendidos
+    SELECT a.idUsuario, u.usuario, DATE(fechaAtencion) as fecha, COUNT(*) as turnos_atendidos
     FROM atencion a
-    JOIN usuarios u ON a.idCaja = u.idCaja
+    JOIN usuarios u ON a.idUsuario = u.id
     WHERE DATE(fechaAtencion) BETWEEN %s AND %s
-    GROUP BY idCaja, DATE(fechaAtencion)
+    GROUP BY idUsuario, DATE(fechaAtencion)
     """
     cursor.execute(query_turnos, (fecha_inicio, fecha_fin))
     turnos = cursor.fetchall()
 
-    # 2. Tiempo promedio de espera de los clientes en el rango de fechas
+    # 2. Tiempo promedio de espera de los clientes por funcionario en el rango de fechas DIA / SEMANA / MES
     query_tiempo = """
-    (SELECT a.idCaja, AVG(TIMESTAMPDIFF(MINUTE, t.fechaRegistro, a.fechaAtencion)) as tiempo_promedio
+    (SELECT a.idUsuario, AVG(TIMESTAMPDIFF(MINUTE, t.fechaRegistro, a.fechaAtencion)) as tiempo_promedio
     FROM atencion a
     JOIN turnos t ON a.turno = t.turno
     WHERE DATE(a.fechaAtencion) BETWEEN %s AND %s
-    GROUP BY a.idCaja)
+    GROUP BY a.idUsuario)
 
     UNION ALL
 
-    (SELECT 'GLOBAL' as idCaja, AVG(TIMESTAMPDIFF(MINUTE, t.fechaRegistro, a.fechaAtencion)) as tiempo_promedio
+    (SELECT 'GLOBAL' as idUsuario, AVG(TIMESTAMPDIFF(MINUTE, t.fechaRegistro, a.fechaAtencion)) as tiempo_promedio
     FROM atencion a
     JOIN turnos t ON a.turno = t.turno
     WHERE DATE(a.fechaAtencion) BETWEEN %s AND %s)
@@ -80,24 +80,24 @@ def obtener_indicadores_por_usuario(conn, tipo_reporte):
     cursor.execute(query_tiempo, (fecha_inicio, fecha_fin, fecha_inicio, fecha_fin))
     tiempos = cursor.fetchall()
     
-    # 3. Hora de mayor atención de turnos por cajera en el rango de fechas
+    # 3. Hora (UNA) de mayor atención de turnos por FUNCIONARIO en el rango de fechas
     query_hora_por_cajera = """
-        SELECT a.idCaja, u.usuario, HOUR(a.fechaAtencion) AS hora, COUNT(*) AS turnos_atendidos
+        SELECT a.idUsuario, u.usuario, HOUR(a.fechaAtencion) AS hora, COUNT(*) AS turnos_atendidos
         FROM atencion a
-        JOIN usuarios u ON a.idCaja = u.idCaja
+        JOIN usuarios u ON a.idUsuario = u.id
         WHERE DATE(a.fechaAtencion) BETWEEN %s AND %s
-        GROUP BY a.idCaja, u.usuario, HOUR(a.fechaAtencion)
+        GROUP BY a.idUsuario, u.usuario, HOUR(a.fechaAtencion)
         HAVING turnos_atendidos = (
             SELECT MAX(turnos_atendidos)
             FROM (
-                SELECT a2.idCaja, HOUR(a2.fechaAtencion) AS hora, COUNT(*) AS turnos_atendidos
+                SELECT a2.idUsuario, HOUR(a2.fechaAtencion) AS hora, COUNT(*) AS turnos_atendidos
                 FROM atencion a2
                 WHERE DATE(a2.fechaAtencion) BETWEEN %s AND %s
-                GROUP BY a2.idCaja, HOUR(a2.fechaAtencion)
+                GROUP BY a2.idUsuario, HOUR(a2.fechaAtencion)
             ) AS max_turnos
-            WHERE max_turnos.idCaja = a.idCaja
+            WHERE max_turnos.idUsuario = a.idUsuario
         )
-        ORDER BY a.idCaja;
+        ORDER BY a.idUsuario;
     """
 
     cursor.execute(query_hora_por_cajera, (fecha_inicio, fecha_fin, fecha_inicio, fecha_fin))

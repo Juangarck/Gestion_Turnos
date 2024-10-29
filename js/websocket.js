@@ -255,5 +255,5 @@ function display_table(table = '') {
         else {
             console.error("No hay turnos disponibles en newArray");
         }
-    }, 10);
+    }, 20);
 }
