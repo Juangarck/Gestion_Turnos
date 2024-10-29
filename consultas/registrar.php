@@ -98,6 +98,7 @@ if (isset($_POST['registrar'])) {
 			$mensaje = "";
 
 			$ocupado = "";
+			
 
 			//funcion para dar un nuevo turno a la caja
 			function darTurno($con, $idCaja)
@@ -119,7 +120,13 @@ if (isset($_POST['registrar'])) {
 					$fecha = date("Y-m-d H:i:s");
 					$turno = limpiar($con, $resultado['turno']);
 					$idTurno = limpiar($con, $resultado['id']);
-					$idUsuario = 1;//$_SESSION['idUsuario'];
+					if (isset($_POST['idUsuario'])) {
+						$idUsuario = (int) $_POST['idUsuario']; // Convertir a entero
+						error_log("ID Usuario recibido: " . $idUsuario); // Verifica en logs
+					} else {
+						$idUsuario = 1; // Valor predeterminado si no se recibe
+						error_log("ID Usuario no recibido, valor por defecto: " . $idUsuario);
+					}
 
 					//poner el turno en la tabla de atenciones se agrega el turno idTurno en la tabla de Atencion
 					$sql = "insert into atencion (turno,idCaja,idUsuario,fechaAtencion, idTurno) values ('$turno','$idCaja','$idUsuario','$fecha', '$idTurno')";

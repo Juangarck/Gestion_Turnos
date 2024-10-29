@@ -22,9 +22,6 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['password'])) {
 		<link rel="stylesheet" type="text/css" href="css/caja.css">
 		<link rel="stylesheet" type="text/css" href="css/sweetalert2.min.css">
 
-
-
-
 	</head>
 
 	<body>
@@ -55,6 +52,25 @@ if (isset($_SESSION['usuario']) && isset($_SESSION['password'])) {
 
 				}
 
+				//Seleccionar el ID del funcionario
+				$sqlIdFuncionario = "select id from usuarios where  idCaja='$idCaja'";
+				$errorFuncionario = "Error al seleccionar el ID del funcionario ";
+				$buscarUsuarioID = consulta($con, $sqlIdFuncionario, $errorFuncionario);
+				
+				// Verificar si se obtuvo un resultado de la consulta
+				$resultadoUsuario = mysqli_fetch_assoc($buscarUsuarioID);
+				$noResultadosUsuario = mysqli_num_rows($buscarUsuarioID);
+
+				if ($noResultadosUsuario > 0) {
+					// Si existe el usuario, extrae el ID del primer registro y enviarlo
+					$idFuncionario = $resultadoUsuario['id'];
+					echo "<script>sessionStorage.setItem('idFuncionario', $idFuncionario);</script>";
+				} else {
+					// Si no existe el usuario, asigna un valor predeterminado y enviarlo
+					$idFuncionario = NULL;
+					echo "<script>sessionStorage.setItem('idFuncionario', 99);</script>";
+				}
+				
 				?>
 
 				<h1>Ventanilla <?php echo $_SESSION['idCaja']; ?></h1>

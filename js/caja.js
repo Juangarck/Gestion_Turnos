@@ -29,13 +29,21 @@ function detectarAccion(e){
 			var ocupado = document.getElementById('ocupado').value;//se usa para saber si se esta atendiendo o no un turno
 			var idCaja = document.getElementById('idCaja').value;
 			var turno = document.getElementById('noTurno').value;
-	
+            var idFuncionario = parseInt(sessionStorage.getItem('idFuncionario')); // Convertir a int
+            console.log('ID Funcionario enviado en caja.js:', idFuncionario); 
+
+            // Verifica que idFuncionario no sea NaN o null
+            if (isNaN(idFuncionario) || idFuncionario === null) {
+                console.error('ID Funcionario no válido:', idFuncionario);
+                return; // Detén la ejecución si el ID no es válido
+            }
+
 			funcion = procesarAtencion;
 	
 			fichero = 'consultas/registrar.php';
 	
-			var datos = 'registrar=atencion'+'&ocupado='+encodeURIComponent(ocupado)+'&idCaja='+encodeURIComponent(idCaja)+'&turno='+encodeURIComponent(turno);
-	
+			var datos = 'registrar=atencion'+'&ocupado='+encodeURIComponent(ocupado)+'&idCaja='+encodeURIComponent(idCaja)+'&turno='+encodeURIComponent(turno)+'&idUsuario='+encodeURIComponent(idFuncionario);
+            console.log('Datos enviados desde el caja.js:', datos);
 		break;
 	
 	}

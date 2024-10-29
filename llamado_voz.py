@@ -3,7 +3,6 @@ import sys
 import os
 from pydub import AudioSegment
 
-
 # Inicializar el motor de síntesis de voz
 engine = pyttsx3.init()
 

@@ -17,6 +17,7 @@ function iniciarWebsocket() {
 	socket.addEventListener('error', errores, false);
 
 	tono = document.getElementById('tono');
+    audio = document.getElementById("audio");
 }
 
 //se activa cuando se conecta el cliente a el socket
@@ -29,7 +30,7 @@ function abierto() {
 	}
 }
 
-//funcion que recibe los emnsajes del socket
+//funcion que recibe los mensajes del socket
 function recibido(e) {
 	console.log(e.data);
 	var jsonData = JSON.parse(e.data);//decodificar el objeto json
@@ -37,6 +38,13 @@ function recibido(e) {
 	var turno = document.getElementById('verTurno');
 	var caja = document.getElementById('verCaja');
 	var cliente = document.getElementById('verCliente');
+
+    // Cambia 'data' a 'jsonData'
+    if (jsonData.action === 'setIdFuncionario') {
+        sessionStorage.setItem('idFuncionario', jsonData.idFuncionario);
+        console.log('ID Funcionario recibido:', jsonData.idFuncionario);
+        return; // Añade un return para salir de la función aquí si es necesario
+    }
 
 	//si turno Viene en 000 o undefined siginfica que no hay nuevos turnos
 	if (typeof jsonData.type === 'string' && jsonData.type === 'data') {
@@ -236,7 +244,6 @@ function display_table(table = '') {
             .then(response => { 
         
                 // Reproducir el archivo de audio generado
-                let audio = document.getElementById("audio");
                 audio.src = `./tonos/turno_${turnoActual.turno}.ogg`;
                 audio.play();
  
